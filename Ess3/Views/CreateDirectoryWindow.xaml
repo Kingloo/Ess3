@@ -1,0 +1,44 @@
+﻿<Window x:Class="Ess3.Views.CreateDirectoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Window.Style>
+        <Style TargetType="{x:Type Window}" BasedOn="{StaticResource {x:Type Window}}">
+            <Setter Property="Title" Value="Create Directory..." />
+            <Setter Property="Width" Value="400" />
+            <Setter Property="SizeToContent" Value="Height" />
+        </Style>
+    </Window.Style>
+    
+    <StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0"
+                   Margin="2">
+                <Label.Content>
+                    <TextBlock x:Name="tblk_Prefix"
+                               FontSize="16" />
+                </Label.Content>
+            </Label>
+
+            <TextBox Grid.Column="1"
+                     x:Name="tbx_DirectoryName"
+                     BorderThickness="1"
+                     Margin="2">
+                <TextBox.Style>
+                    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}" />
+                </TextBox.Style>
+            </TextBox>
+        </Grid>
+
+        <Button Width="85"
+                Margin="0,5,0,5"
+                Content="OK"
+                IsDefault="True"
+                Click="Button_Click" />
+    </StackPanel>
+</Window>

@@ -1,0 +1,244 @@
+﻿<Window x:Class="Ess3.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:this="clr-namespace:Ess3"
+        xmlns:model="clr-namespace:Ess3.Model"
+        xmlns:views="clr-namespace:Ess3.Views"
+        x:Name="Ess3"
+        Loaded="MainWindow_Loaded"
+        Closing="MainWindow_Closing">
+
+    <Window.Style>
+        <Style TargetType="{x:Type views:MainWindow}" BasedOn="{StaticResource {x:Type Window}}">
+            <Setter Property="Title" Value="Ess3" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="ResizeMode" Value="CanResize" />
+            <Setter Property="MinWidth" Value="1000" />
+            <Setter Property="Width" Value="1000" />
+            <Setter Property="MinHeight" Value="900" />
+            <Setter Property="Height" Value="900" />
+            <Setter Property="FontSize" Value="15" />
+        </Style>
+    </Window.Style>
+
+    <Window.Resources>
+        <this:BytesToHumanReadableConverter x:Key="bytesToHumanReadableConverter" />
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition MaxHeight="80" MinHeight="0" Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <Grid.Resources>
+            <this:ProperVisibilityConverter x:Key="visConv"
+                                            True="Visible"
+                                            False="Collapsed" />
+        </Grid.Resources>
+
+        <TabControl x:Name="tabControl"
+                    Grid.Row="0"
+                    Padding="0,0,0,0"
+                    ItemsSource="{Binding Path=Buckets}"
+                    VirtualizingPanel.IsVirtualizing="True"
+                    VirtualizingPanel.VirtualizationMode="Recycling">
+            <!-- Padding, not margin -->
+
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Assets/pixel_bucket.png"
+                            MaxHeight="25"
+                            Height="Auto"
+                            MaxWidth="25"
+                            Width="Auto"
+                            ClipToBounds="True" />
+                        <Label Content="{Binding Path=BucketName}">
+                            <Label.ToolTip>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <!--<Binding Path="TotalSize" StringFormat="{}{0} bytes" />-->
+                                        <Binding Path="TotalSize"
+                                                 Converter="{StaticResource bytesToHumanReadableConverter}" />
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Label.ToolTip>
+                        </Label>
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="375" />
+                        </Grid.ColumnDefinitions>
+
+                        <TreeView x:Name="treeview"
+                              Grid.Column="0"
+                              ItemsSource="{Binding Path=Ess3Objects}"
+                              VirtualizingPanel.IsVirtualizing="True"
+                              VirtualizingPanel.VirtualizationMode="Recycling"
+                              Tag="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type views:MainWindow}}}">
+                            
+                            <TreeView.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Upload File..."
+                                              Command="{Binding Path=PlacementTarget.Tag.UploadFileCommandAsync, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}" />
+
+                                    <MenuItem Header="Create Directory..."
+                                              Command="{Binding Path=PlacementTarget.Tag.CreateDirectoryCommandAsync, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}" />
+                                </ContextMenu>
+                            </TreeView.ContextMenu>
+                            
+                            <TreeView.Resources>
+                                
+                                <HierarchicalDataTemplate DataType="{x:Type model:Ess3Directory}"
+                                                      ItemsSource="{Binding Path=Ess3Objects}">
+                                    <Label Tag="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type views:MainWindow}}}">
+                                        <Label.Content>
+                                            <TextBlock Text="{Binding Path=Key, Mode=OneTime}" />
+                                        </Label.Content>
+                                        <Label.ContextMenu>
+                                            <ContextMenu>
+
+                                                <MenuItem Header="Show ACLs"
+                                                      Command="{Binding Path=PlacementTarget.Tag.ShowACLDisplayWindowCommandAsync, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                                      CommandParameter="{Binding}" />
+
+                                                <MenuItem Header="Upload..."
+                                                      Command="{Binding Path=PlacementTarget.Tag.UploadFileCommandAsync, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                                      CommandParameter="{Binding}" />
+
+                                                <MenuItem Header="Create Directory..."
+                                                      Command="{Binding Path=PlacementTarget.Tag.CreateDirectoryCommandAsync, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                                      CommandParameter="{Binding}" />
+
+                                                <MenuItem Header="Delete"
+                                                      Command="{Binding Path=PlacementTarget.Tag.DeleteDirectoryCommandAsync, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                                      CommandParameter="{Binding}" />
+
+                                            </ContextMenu>
+                                        </Label.ContextMenu>
+                                    </Label>
+                                </HierarchicalDataTemplate>
+
+                                <HierarchicalDataTemplate DataType="{x:Type model:Ess3File}">
+                                    <Label Tag="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type views:MainWindow}}}">
+                                        
+                                        <Label.Content>
+                                            <TextBlock Text="{Binding Path=Key, Mode=OneTime}" />
+                                        </Label.Content>
+                                        
+                                        <Label.ContextMenu>
+                                            <ContextMenu>
+
+                                                <MenuItem Header="Show ACLs"
+                                                          Command="{Binding Path=PlacementTarget.Tag.ShowACLDisplayWindowCommandAsync, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                                          CommandParameter="{Binding}" />
+
+                                                <MenuItem Header="Copy Public URI to Clipboard"
+                                                          Command="{Binding Path=PlacementTarget.Tag.CopyPublicUriToClipboardCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                                          CommandParameter="{Binding}" />
+
+                                                <MenuItem Header="Download"
+                                                          Command="{Binding Path=PlacementTarget.Tag.DownloadFileCommandAsync, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                                          CommandParameter="{Binding}" />
+
+                                                <MenuItem Header="Make Private"
+                                                          Command="{Binding Path=PlacementTarget.Tag.MakeFilePrivateCommandAsync, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                                          CommandParameter="{Binding}" />
+
+                                                <MenuItem Header="Make Public Read"
+                                                          Command="{Binding Path=PlacementTarget.Tag.MakeFilePublicReadCommandAsync, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                                          CommandParameter="{Binding}" />
+
+                                                <MenuItem Header="Toggle Storage Class"
+                                                          Command="{Binding Path=PlacementTarget.Tag.SetS3StorageClassCommandAsync, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                                          CommandParameter="{Binding}" />
+
+                                                <MenuItem Header="Delete"
+                                                          Command="{Binding Path=PlacementTarget.Tag.DeleteFileCommandAsync, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                                          CommandParameter="{Binding}" />
+
+                                            </ContextMenu>
+                                        </Label.ContextMenu>
+                                    </Label>
+                                </HierarchicalDataTemplate>
+
+                            </TreeView.Resources>
+                        </TreeView>
+
+                        <StackPanel Grid.Column="1"
+                                    Background="LightGray"
+                                    DataContext="{Binding ElementName=treeview, Path=SelectedItem, Mode=OneWay}">
+
+                            <StackPanel.Resources>
+                                <Style x:Key="dataName" TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
+                                    <Setter Property="Margin" Value="10,0,0,0" />
+                                </Style>
+                                <Style x:Key="dataLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
+                                    <Setter Property="MinHeight" Value="40" />
+                                    <Setter Property="Margin" Value="30,0,0,5" />
+                                    <Setter Property="FontSize" Value="16" />
+                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                </Style>
+                            </StackPanel.Resources>
+
+                            <Label Content="key" Style="{StaticResource dataName}" />
+                            <Label Style="{StaticResource dataLabel}">
+                                <Label.Content>
+                                    <TextBlock Text="{Binding Path=Key, Mode=OneTime}"
+                                           TextWrapping="Wrap" />
+                                </Label.Content>
+                            </Label>
+
+                            <Label Content="etag" Style="{StaticResource dataName}" />
+                            <Label Style="{StaticResource dataLabel}">
+                                <Label.Content>
+                                    <TextBlock Text="{Binding Path=Etag, Mode=OneTime}" />
+                                </Label.Content>
+                            </Label>
+
+                            <Label Content="modified" Style="{StaticResource dataName}" />
+                            <Label Style="{StaticResource dataLabel}">
+                                <Label.Content>
+                                    <TextBlock Text="{Binding Path=LastModified, Mode=OneTime}" />
+                                </Label.Content>
+                            </Label>
+
+                            <Label Content="owner" Style="{StaticResource dataName}" />
+                            <Label Style="{StaticResource dataLabel}">
+                                <Label.Content>
+                                    <TextBlock Text="{Binding Path=Owner.DisplayName, Mode=OneTime}" />
+                                </Label.Content>
+                            </Label>
+
+                            <Label Content="size" Style="{StaticResource dataName}" />
+                            <Label Style="{StaticResource dataLabel}">
+                                <Label.Content>
+                                    <TextBlock Text="{Binding Path=Size, Mode=OneTime, Converter={StaticResource bytesToHumanReadableConverter}}" />
+                                </Label.Content>
+                            </Label>
+
+                            <Label Content="storage class" Style="{StaticResource dataName}" />
+                            <Label Style="{StaticResource dataLabel}">
+                                <Label.Content>
+                                    <TextBlock Text="{Binding Path=StorageClass, Mode=OneTime}" />
+                                </Label.Content>
+                            </Label>
+
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+
+        <views:ActivityProgress x:Name="actPrg"
+                                Grid.Row="1"
+                                Visibility="{Binding Path=Activity, Converter={StaticResource visConv}}" />
+    </Grid>
+</Window>
