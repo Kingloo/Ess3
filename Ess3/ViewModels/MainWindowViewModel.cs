@@ -550,7 +550,7 @@ namespace Ess3.ViewModels
             }
         }
 
-        private Task SetS3StorageClassAsync(Ess3File file)
+        private async Task SetS3StorageClassAsync(Ess3File file)
         {
             if (file is null) { throw new ArgumentNullException(nameof(file)); }
 
@@ -569,13 +569,16 @@ namespace Ess3.ViewModels
                 newClass = S3StorageClass.Standard;
             }
 
-            Activity = true;
+            HttpStatusCode status = await S3.SetS3StorageClassAsync(ess3Settings, file, newClass, CancellationToken.None);
 
-            S3.SetS3StorageClass(ess3Settings, file, newClass);
+            if (status != HttpStatusCode.OK)
+            {
+                string message = string.Format(CultureInfo.CurrentCulture, "setting storage class on file ({0}) failed: {1}", file.Key, status.ToString());
 
-            Activity = false;
+                await Log.MessageAsync(message);
+            }
 
-            return RefreshBucketAsync(file.Bucket);
+            await RefreshBucketAsync(file.Bucket);
         }
 
         private DelegateCommandAsync<Ess3File> _deleteFileCommandAsync = null;

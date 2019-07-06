@@ -399,15 +399,29 @@ namespace Ess3.Model
             return HttpStatusCode.NotImplemented;
         }
 
-        public static void SetS3StorageClass(Ess3Settings settings, Ess3File file, S3StorageClass storageClass)
+        public static async Task<HttpStatusCode> SetS3StorageClassAsync(Ess3Settings settings, Ess3File file, S3StorageClass storageClass, CancellationToken token)
         {
-            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
-            if (file is null) { throw new ArgumentNullException(nameof(file)); }
-            if (storageClass is null) { throw new ArgumentNullException(nameof(storageClass)); }
+            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
+            if (file == null) { throw new ArgumentNullException(nameof(file)); }
+            if (storageClass == null) { throw new ArgumentNullException(nameof(storageClass)); }
+            if (token == null) { token = CancellationToken.None; }
 
-            using (IAmazonS3 client = settings.Client)
+            // check against both just in case someone sets partCopy... incorrectly
+            if (file.Size < multipartCopyWhenGreaterThanSize
+                && file.Size < singleCopyMaximumAllowableSize)
             {
-                AmazonS3Util.SetObjectStorageClass(client, file.Bucket.BucketName, file.Key, storageClass);
+                return SetS3StorageClass(settings, file, storageClass);
+            }
+            else
+            {
+                var initiateRequest = new InitiateMultipartUploadRequest()
+                {
+                    BucketName = file.Bucket.BucketName,
+                    Key = file.Key,
+                    StorageClass = storageClass
+                };
+
+                return await CopyObjectInPartsAsync(settings, initiateRequest, file.Size, token).ConfigureAwait(false);
             }
         }
 
@@ -463,6 +477,26 @@ namespace Ess3.Model
             string[] segments = localFilePath.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
 
             return segments.Last();
+        }
+
+
+        private static HttpStatusCode SetS3StorageClass(Ess3Settings settings, Ess3File file, S3StorageClass storageClass)
+        {
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (file is null) { throw new ArgumentNullException(nameof(file)); }
+            if (storageClass is null) { throw new ArgumentNullException(nameof(storageClass)); }
+
+            if (file.Size > singleCopyMaximumAllowableSize)
+            {
+                return HttpStatusCode.BadRequest;
+            }
+
+            using (IAmazonS3 client = settings.Client)
+            {
+                AmazonS3Util.SetObjectStorageClass(client, file.Bucket.BucketName, file.Key, storageClass);
+
+                return HttpStatusCode.OK;
+            }
         }
 
 
