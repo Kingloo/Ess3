@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Ess3
+namespace Ess3.Common
 {
     public abstract class Command : ICommand
     {

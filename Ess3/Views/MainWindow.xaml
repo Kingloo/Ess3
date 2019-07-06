@@ -4,6 +4,7 @@
         xmlns:this="clr-namespace:Ess3"
         xmlns:model="clr-namespace:Ess3.Model"
         xmlns:views="clr-namespace:Ess3.Views"
+        xmlns:converters="clr-namespace:Ess3.Converters"
         x:Name="Ess3"
         Loaded="MainWindow_Loaded"
         Closing="MainWindow_Closing">
@@ -22,7 +23,7 @@
     </Window.Style>
 
     <Window.Resources>
-        <this:BytesToHumanReadableConverter x:Key="bytesToHumanReadableConverter" />
+        <converters:BytesToHumanReadableConverter x:Key="bytesToHumanReadableConverter" />
     </Window.Resources>
 
     <Grid>
@@ -32,9 +33,9 @@
         </Grid.RowDefinitions>
         
         <Grid.Resources>
-            <this:ProperVisibilityConverter x:Key="visConv"
-                                            True="Visible"
-                                            False="Collapsed" />
+            <converters:BooleanToVisibilityConverter x:Key="visConv"
+                                                     True="Visible"
+                                                     False="Collapsed" />
         </Grid.Resources>
 
         <TabControl x:Name="tabControl"

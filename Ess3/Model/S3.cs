@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -9,16 +11,17 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Amazon.S3.Util;
+using Ess3.Common;
 
 namespace Ess3.Model
 {
     public static class S3
     {
         // AWS S3 enforced limit, correct as of April 2017
-        private static Int64 singleCopyMaximumAllowableSize = Convert.ToInt64(Math.Pow(2d, 30d) * 5d); // 2^30 => giga, (* 5) => 5 GiB
+        private static readonly Int64 singleCopyMaximumAllowableSize = Convert.ToInt64(Math.Pow(2d, 30d) * 5d); // 2^30 => giga, (* 5) => 5 GiB
 
         // chose a smaller size anyway, for performance reasons
-        private static Int64 partCopyWhenGreaterThanSize = Convert.ToInt64(Math.Pow(2d, 20d) * 250d); // 2^20 => mega, (* 250) => 250 MiB
+        private static readonly Int64 multipartCopyWhenGreaterThanSize = Convert.ToInt64(Math.Pow(2d, 20d) * 250d); // 2^20 => mega, (* 250) => 250 MiB
 
 
         public static Task<IEnumerable<Ess3Bucket>> ListAllBucketsAsync(Ess3Settings settings)
@@ -26,7 +29,7 @@ namespace Ess3.Model
 
         public static async Task<IEnumerable<Ess3Bucket>> ListAllBucketsAsync(Ess3Settings settings, CancellationToken token)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
             if (token == null) { token = CancellationToken.None; }
 
             using (IAmazonS3 client = settings.Client)
@@ -41,12 +44,12 @@ namespace Ess3.Model
                     }
                     else
                     {
-                        await Log.LogMessageAsync($"List all buckets failed ({resp.HttpStatusCode.ToString()})").ConfigureAwait(false);
+                        await Log.MessageAsync($"List all buckets failed ({resp.HttpStatusCode.ToString()})").ConfigureAwait(false);
                     }
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
                 }
             }
 
@@ -55,8 +58,8 @@ namespace Ess3.Model
         
         public static async Task<IEnumerable<Ess3Object>> ListAllObjectsForBucketAsync(Ess3Settings settings, Ess3Bucket bucket, CancellationToken token)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (bucket == null) { throw new ArgumentNullException(nameof(bucket)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (bucket is null) { throw new ArgumentNullException(nameof(bucket)); }
             if (token == null) { token = CancellationToken.None; }
 
             ListObjectsRequest req = new ListObjectsRequest
@@ -76,12 +79,14 @@ namespace Ess3.Model
                     }
                     else
                     {
-                        await Log.LogMessageAsync($"List all objects failed ({resp.HttpStatusCode.ToString()})").ConfigureAwait(false);
+                        string message = string.Format(CultureInfo.CurrentCulture, "List all objects in {0} failed: {1}", bucket.BucketName, resp.HttpStatusCode.ToString());
+
+                        await Log.MessageAsync(message).ConfigureAwait(false);
                     }
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
                 }
             }
 
@@ -90,8 +95,8 @@ namespace Ess3.Model
 
         public static async Task<IEnumerable<Ess3Object>> ListAllObjectsForDirectoryAsync(Ess3Settings settings, Ess3Directory directory, CancellationToken token)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (directory == null) { throw new ArgumentNullException(nameof(directory)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (directory is null) { throw new ArgumentNullException(nameof(directory)); }
             if (token == null) { token = CancellationToken.None; }
 
             ListObjectsRequest req = new ListObjectsRequest
@@ -112,12 +117,14 @@ namespace Ess3.Model
                     }
                     else
                     {
-                        await Log.LogMessageAsync($"List objects in dir {directory.Key} failed ({resp.HttpStatusCode.ToString()})").ConfigureAwait(false);
+                        string message = string.Format(CultureInfo.CurrentCulture, "list objects in {0} failed: {1}", directory.Key, resp.HttpStatusCode.ToString());
+
+                        await Log.MessageAsync(message).ConfigureAwait(false);
                     }
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
                 }
             }
 
@@ -126,8 +133,8 @@ namespace Ess3.Model
 
         public static async Task<HttpStatusCode> CreateDirectoryAsync(Ess3Settings settings, PutObjectRequest request, CancellationToken token)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (request == null) { throw new ArgumentNullException(nameof(request)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (request is null) { throw new ArgumentNullException(nameof(request)); }
             if (token == null) { token = CancellationToken.None; }
 
             using (IAmazonS3 client = settings.Client)
@@ -140,7 +147,7 @@ namespace Ess3.Model
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
                 }
             }
             
@@ -183,8 +190,8 @@ namespace Ess3.Model
 
         public static async Task<HttpStatusCode> DeleteDirectoryAsync(Ess3Settings settings, Ess3Directory directory, bool failOnDirectoryNotEmpty, CancellationToken token)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (directory == null) { throw new ArgumentNullException(nameof(directory)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (directory is null) { throw new ArgumentNullException(nameof(directory)); }
             if (token == null) { token = CancellationToken.None; }
 
             if (directory.Ess3Objects.Count > 0)
@@ -217,7 +224,7 @@ namespace Ess3.Model
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
 
                     return HttpStatusCode.NotImplemented;
                 }
@@ -226,8 +233,8 @@ namespace Ess3.Model
 
         public static Task<HttpStatusCode> DeleteFileAsync(Ess3Settings settings, Ess3File file, CancellationToken token)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (file == null) { throw new ArgumentNullException(nameof(file)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (file is null) { throw new ArgumentNullException(nameof(file)); }
             if (token == null) { token = CancellationToken.None; }
 
             DeleteObjectRequest req = new DeleteObjectRequest
@@ -241,8 +248,8 @@ namespace Ess3.Model
 
         public static async Task<HttpStatusCode> DownloadFileAsync(Ess3Settings settings, Ess3File file, string localFilePath, CancellationToken token, EventHandler<WriteObjectProgressArgs> progressHandler)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (file == null) { throw new ArgumentNullException(nameof(file)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (file is null) { throw new ArgumentNullException(nameof(file)); }
             if (token == null) { token = CancellationToken.None; }
 
             GetObjectRequest req = new GetObjectRequest
@@ -265,18 +272,20 @@ namespace Ess3.Model
                     }
                     else
                     {
-                        await Log.LogMessageAsync($"getting object failed ({response.HttpStatusCode.ToString()})").ConfigureAwait(false);
+                        string message = string.Format(CultureInfo.CurrentCulture, "getting object {0} failed: {1}", file.Key, response.HttpStatusCode.ToString());
+
+                        await Log.MessageAsync(message).ConfigureAwait(false);
                     }
 
                     return response.HttpStatusCode;
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
                 }
                 catch (IOException ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
 
                     return HttpStatusCode.InternalServerError;
                 }
@@ -287,7 +296,7 @@ namespace Ess3.Model
 
         public static async Task<HttpStatusCode> UploadFileInPartsAsync(Ess3Settings settings, string localFilePath, string bucketName, string prefix, CancellationToken token, EventHandler<UploadProgressArgs> progressHandler)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
             if (token == null) { token = CancellationToken.None; }
 
             TransferUtilityUploadRequest req = new TransferUtilityUploadRequest
@@ -303,7 +312,7 @@ namespace Ess3.Model
 
             TransferUtilityConfig transferUtilConfig = new TransferUtilityConfig
             {
-                MinSizeBeforePartUpload = 1024 * 1024 * 10, // 10 mebibytes
+                MinSizeBeforePartUpload = 1024 * 1024 * 50, // 50 mebibytes
                 ConcurrentServiceRequests = 1
             };
 
@@ -317,13 +326,13 @@ namespace Ess3.Model
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
 
                     return HttpStatusCode.NotImplemented;
                 }
                 catch (IOException ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
 
                     return HttpStatusCode.InternalServerError;
                 }
@@ -332,8 +341,8 @@ namespace Ess3.Model
 
         public static async Task<S3AccessControlList> GetACLAsync(Ess3Settings settings, Ess3Object obj, CancellationToken token)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (obj == null) { throw new ArgumentNullException(nameof(obj)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (obj is null) { throw new ArgumentNullException(nameof(obj)); }
             if (token == null) { token = CancellationToken.None; }
 
             GetACLRequest req = new GetACLRequest
@@ -352,7 +361,7 @@ namespace Ess3.Model
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
                 }
             }
 
@@ -361,9 +370,9 @@ namespace Ess3.Model
 
         public static async Task<HttpStatusCode> SetACLAsync(Ess3Settings settings, Ess3Object obj, S3CannedACL cannedACL, CancellationToken token)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (obj == null) { throw new ArgumentNullException(nameof(obj)); }
-            if (cannedACL == null) { throw new ArgumentNullException(nameof(cannedACL)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (obj is null) { throw new ArgumentNullException(nameof(obj)); }
+            if (cannedACL is null) { throw new ArgumentNullException(nameof(cannedACL)); }
             if (token == null) { token = CancellationToken.None; }
 
             PutACLRequest req = new PutACLRequest
@@ -383,7 +392,7 @@ namespace Ess3.Model
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
                 }
             }
             
@@ -392,9 +401,9 @@ namespace Ess3.Model
 
         public static void SetS3StorageClass(Ess3Settings settings, Ess3File file, S3StorageClass storageClass)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (file == null) { throw new ArgumentNullException(nameof(file)); }
-            if (storageClass == null) { throw new ArgumentNullException(nameof(storageClass)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (file is null) { throw new ArgumentNullException(nameof(file)); }
+            if (storageClass is null) { throw new ArgumentNullException(nameof(storageClass)); }
 
             using (IAmazonS3 client = settings.Client)
             {
@@ -402,46 +411,11 @@ namespace Ess3.Model
             }
         }
 
-        public static async Task<HttpStatusCode> SetS3StorageClassAsync(Ess3Settings settings, Ess3File file, S3StorageClass storageClass, CancellationToken token)
-        {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (file == null) { throw new ArgumentNullException(nameof(file)); }
-            if (storageClass == null) { throw new ArgumentNullException(nameof(storageClass)); }
-            if (token == null) { token = CancellationToken.None; }
-
-            // check against both just in case someone sets partCopy... incorrectly
-            if (file.Size < partCopyWhenGreaterThanSize
-                && file.Size < singleCopyMaximumAllowableSize)
-            {
-                var request = new CopyObjectRequest
-                {
-                    SourceBucket = file.Bucket.BucketName,
-                    SourceKey = file.Key,
-                    DestinationBucket = file.Bucket.BucketName,
-                    DestinationKey = file.Key,
-                    StorageClass = storageClass
-                };
-                
-                return await CopyObjectAsync(settings, request, token).ConfigureAwait(false);
-            }
-            else
-            {
-                var initiateRequest = new InitiateMultipartUploadRequest()
-                {
-                    BucketName = file.Bucket.BucketName,
-                    Key = file.Key,
-                    StorageClass = storageClass
-                };
-                
-                return await CopyObjectInPartsAsync(settings, initiateRequest, file.Size, token).ConfigureAwait(false);
-            }
-        }
-        
 
         private static async Task<HttpStatusCode> DeleteObjectAsync(Ess3Settings settings, DeleteObjectRequest deleteRequest, CancellationToken token)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (deleteRequest == null) { throw new ArgumentNullException(nameof(deleteRequest)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (deleteRequest is null) { throw new ArgumentNullException(nameof(deleteRequest)); }
             if (token == null) { token = CancellationToken.None; }
 
             using (IAmazonS3 client = settings.Client)
@@ -454,7 +428,7 @@ namespace Ess3.Model
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
                 }
             }
             
@@ -463,8 +437,8 @@ namespace Ess3.Model
 
         private static async Task<HttpStatusCode> DeleteObjectsAsync(Ess3Settings settings, DeleteObjectsRequest deleteRequest, CancellationToken token)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (deleteRequest == null) { throw new ArgumentNullException(nameof(deleteRequest)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (deleteRequest is null) { throw new ArgumentNullException(nameof(deleteRequest)); }
             if (token == null) { token = CancellationToken.None; }
 
             using (IAmazonS3 client = settings.Client)
@@ -477,7 +451,7 @@ namespace Ess3.Model
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
                 }
             }
             
@@ -494,8 +468,8 @@ namespace Ess3.Model
 
         private static async Task<HttpStatusCode> CopyObjectAsync(Ess3Settings settings, CopyObjectRequest copyRequest, CancellationToken token)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (copyRequest == null) { throw new ArgumentNullException(nameof(copyRequest)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (copyRequest is null) { throw new ArgumentNullException(nameof(copyRequest)); }
             if (token == null) { token = CancellationToken.None; }
 
             using (IAmazonS3 client = settings.Client)
@@ -508,7 +482,7 @@ namespace Ess3.Model
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
                 }
             }
 
@@ -517,10 +491,12 @@ namespace Ess3.Model
 
         private static async Task<HttpStatusCode> CopyObjectInPartsAsync(Ess3Settings settings, InitiateMultipartUploadRequest initiateRequest, Int64 fileSize, CancellationToken token)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (initiateRequest == null) { throw new ArgumentNullException(nameof(initiateRequest)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (initiateRequest is null) { throw new ArgumentNullException(nameof(initiateRequest)); }
             if (token == null) { token = CancellationToken.None; }
-            
+
+            Debug.WriteLine($"copying {initiateRequest.Key} in parts...");
+
             var uploadResponses = new List<UploadPartResponse>();
             
             using (IAmazonS3 client = settings.Client)
@@ -534,11 +510,13 @@ namespace Ess3.Model
                         return initiateResponse.HttpStatusCode;
                     }
 
-                    string uploadId = initiateResponse.UploadId;
+                    IEnumerable<CopyPartRequest> copyRequests = CreateCopyPartRequests(initiateRequest, initiateResponse.UploadId, fileSize);
 
-                    IEnumerable<CopyPartRequest> copyRequests = CreateCopyPartRequests(initiateRequest, uploadId, fileSize);
+                    var copyPartTasks = copyRequests
+                        .Select(x => client.CopyPartAsync(x, token))
+                        .ToList();
 
-                    var copyPartTasks = copyRequests.Select(x => client.CopyPartAsync(x, token));
+                    Debug.WriteLine($"copying in {copyPartTasks.Count} parts");
 
                     CopyPartResponse[] copyResponses = await Task.WhenAll(copyPartTasks).ConfigureAwait(false);
 
@@ -546,7 +524,7 @@ namespace Ess3.Model
                     {
                         BucketName = initiateRequest.BucketName,
                         Key = initiateRequest.Key,
-                        UploadId = uploadId
+                        UploadId = initiateResponse.UploadId
                     };
 
                     completeRequest.AddPartETags(copyResponses);
@@ -557,7 +535,7 @@ namespace Ess3.Model
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    Log.LogException(ex);
+                    await Log.ExceptionAsync(ex).ConfigureAwait(false);
                 }
             }
 
@@ -570,10 +548,11 @@ namespace Ess3.Model
 
             Int64 lastByte = 0L;
             
-            // 2^20 => mega, (* 25) => 25 MiB
-            Int64 partSize = Convert.ToInt64(Math.Pow(2d, 20d) * 25d);
+            // 2^20 => mega, (* 25) => 150 MiB
+            Int64 partSize = Convert.ToInt64(Math.Pow(2d, 20d) * 150d);
 
             Int64 bytePosition = 0L;
+
             for (int i = 1; bytePosition < size; i++)
             {
                 lastByte = (bytePosition + partSize - 1) >= size

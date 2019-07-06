@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows;
 using Amazon;
+using Ess3.Common;
 using Ess3.Model;
+using Ess3.Views;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -19,7 +21,7 @@ namespace Ess3
 
             FileInfo settingsFile = new FileInfo(Path.Combine(directory, filename));
 
-            Ess3Settings ess3Settings = LoadSettingsAsync(settingsFile).GetAwaiter().GetResult();
+            Ess3Settings ess3Settings = LoadSettings(settingsFile);
 
             App app = new App(ess3Settings);
 
@@ -27,31 +29,31 @@ namespace Ess3
 
             if (exitCode != 0)
             {
-                Log.LogMessage($"App exited with code: {exitCode}");
+                Log.Message(string.Format(CultureInfo.CurrentCulture, "App exited with code: {0}", exitCode));
             }
 
             return exitCode;
         }
 
-        private static async Task<Ess3Settings> LoadSettingsAsync(FileInfo file)
+        private static Ess3Settings LoadSettings(FileInfo file)
         {
-            FileStream fsAsync = new FileStream(
+            var fs = new FileStream(
                 file.FullName,
                 FileMode.Open,
                 FileAccess.Read,
                 FileShare.None,
                 4096,
-                FileOptions.Asynchronous | FileOptions.SequentialScan);
+                FileOptions.SequentialScan);
 
             try
             {
-                using (StreamReader sr = new StreamReader(fsAsync))
+                using (StreamReader sr = new StreamReader(fs))
                 {
-                    fsAsync = null;
+                    fs = null;
 
-                    string fileContents = await sr.ReadToEndAsync().ConfigureAwait(false);
+                    string contents = sr.ReadToEnd();
 
-                    return Parse(fileContents);
+                    return Parse(contents);
                 }
             }
             catch (FileNotFoundException)
@@ -60,29 +62,32 @@ namespace Ess3
                 string caption = "No settings file found";
 
                 MessageBox.Show(text, caption, MessageBoxButton.OK, MessageBoxImage.Error);
-
-                return null;
             }
             finally
             {
-                fsAsync?.Dispose();
+                fs?.Dispose();
             }
+
+            return null;
         }
 
-        private static Ess3Settings Parse(string fileContents)
+        private static Ess3Settings Parse(string contents)
         {
             try
             {
-                JObject json = JObject.Parse(fileContents);
+                JObject json = JObject.Parse(contents);
 
-                return new Ess3Settings(
-                    (string)json["AWSAccessKey"],
-                    (string)json["AWSSecretKey"],
-                    RegionEndpoint.GetBySystemName((string)json["EndpointSystemName"]));
+                string accessKey = (string)json["AWSAccessKey"];
+                string secretKey = (string)json["AWSSecretKey"];
+
+                RegionEndpoint endpoint = RegionEndpoint.GetBySystemName((string)json["EndpointSystemName"]);
+
+                return new Ess3Settings(accessKey, secretKey, endpoint);
             }
-            catch (JsonReaderException) { }
-
-            return null;
+            catch (JsonReaderException)
+            {
+                return null;
+            }
         }
     }
 }

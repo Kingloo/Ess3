@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Amazon.S3.Model;
@@ -11,21 +12,15 @@ namespace Ess3.Model
     public class Ess3Bucket : S3Bucket
     {
         #region Properties
-        private long _totalSize = 0L;
-        public long TotalSize
-        {
-            get => _totalSize;
-            set => _totalSize = value;
-        }
+        public Int64 TotalSize { get; set; } = 0L;
 
-        private readonly ObservableCollection<Ess3Object> _ess3Objects
-            = new ObservableCollection<Ess3Object>();
+        private readonly ObservableCollection<Ess3Object> _ess3Objects = new ObservableCollection<Ess3Object>();
         public IReadOnlyCollection<Ess3Object> Ess3Objects => _ess3Objects;
         #endregion
 
         public Ess3Bucket(S3Bucket s3Bucket)
         {
-            if (s3Bucket == null) { throw new ArgumentNullException(nameof(s3Bucket)); }
+            if (s3Bucket is null) { throw new ArgumentNullException(nameof(s3Bucket)); }
 
             BucketName = s3Bucket.BucketName;
             CreationDate = s3Bucket.CreationDate;
@@ -78,10 +73,12 @@ namespace Ess3.Model
         {
             StringBuilder sb = new StringBuilder();
 
+            var cc = CultureInfo.CurrentCulture;
+
             sb.AppendLine(GetType().Name);
-            sb.AppendLine($"Name: {BucketName}");
-            sb.AppendLine($"Created: {CreationDate}");
-            sb.AppendLine($"This bucket has {Ess3Objects.Count} objects");
+            sb.AppendLine(string.Format(cc, "Name: {0}", BucketName));
+            sb.AppendLine(string.Format(cc, "Created: {0}", CreationDate));
+            sb.AppendLine(string.Format(cc, "This bucket has {0} objects", Ess3Objects.Count));
 
             return sb.ToString();
         }

@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Ess3.Common;
 
 namespace Ess3.Model
 {
-    public abstract class Ess3Object : ViewModelBase, IEquatable<Ess3Object>, IComparable<Ess3Object>
+    public abstract class Ess3Object : BindableBase, IEquatable<Ess3Object>, IComparable<Ess3Object>
     {
         #region Properties
         private readonly Ess3Bucket _bucket = null;
@@ -150,16 +152,18 @@ namespace Ess3.Model
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine($"Bucket name: {Bucket.BucketName}");
-            sb.AppendLine($"Key: {Key}");
-            sb.AppendLine($"Prefix: {Prefix}");
-            sb.AppendLine($"IsDirectory: {IsDirectory}");
-            sb.AppendLine($"IsAtBucketRoot: {IsAtBucketRoot}");
-            sb.AppendLine($"Etag: {Etag}");
-            sb.AppendLine($"LastModified: {LastModified}");
-            sb.AppendLine($"Owner: {Owner}");
-            sb.AppendLine($"Size: {Size}");
-            sb.AppendLine($"Storage class: {StorageClass.Value}");
+            var cc = CultureInfo.CurrentCulture;
+
+            sb.AppendLine(string.Format(cc, "Bucket name: {0}", Bucket.BucketName));
+            sb.AppendLine(string.Format(cc, "Key: {0}", Key));
+            sb.AppendLine(string.Format(cc, "Prefix: {0}", Prefix));
+            sb.AppendLine(string.Format(cc, "IsDirectory: {0}", IsDirectory));
+            sb.AppendLine(string.Format(cc, "IsAtBucketRoot: {0}", IsAtBucketRoot));
+            sb.AppendLine(string.Format(cc, "Etag: {0}", Etag));
+            sb.AppendLine(string.Format(cc, "LastModified: {0}", LastModified));
+            sb.AppendLine(string.Format(cc, "Owner: {0}", Owner));
+            sb.AppendLine(string.Format(cc, "Size: {0}", Size));
+            sb.AppendLine(string.Format(cc, "Storage class: {0}", StorageClass.Value));
 
             return sb.ToString();
         }

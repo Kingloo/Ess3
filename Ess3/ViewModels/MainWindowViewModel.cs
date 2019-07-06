@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,13 +13,14 @@ using System.Windows.Threading;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using Ess3.Common;
 using Ess3.Extensions;
 using Ess3.Model;
 using Ess3.Views;
 
 namespace Ess3.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    public class MainWindowViewModel : BindableBase
     {
         #region Events
         public event EventHandler<ActivityProgressChangedEventArgs> ActivityProgressChanged;
@@ -61,7 +63,7 @@ namespace Ess3.ViewModels
         {
             get
             {
-                if (_showACLDisplayWindowCommandAsync == null)
+                if (_showACLDisplayWindowCommandAsync is null)
                 {
                     _showACLDisplayWindowCommandAsync = new DelegateCommandAsync<Ess3Object>(ShowACLDisplayWindowAsync, CanExecute);
                 }
@@ -98,7 +100,7 @@ namespace Ess3.ViewModels
         {
             get
             {
-                if (_copyPublicUriToClipboardCommand == null)
+                if (_copyPublicUriToClipboardCommand is null)
                 {
                     _copyPublicUriToClipboardCommand = new DelegateCommand<Ess3File>(CopyPublicUriToClipboard, CanExecute);
                 }
@@ -129,7 +131,7 @@ namespace Ess3.ViewModels
         {
             get
             {
-                if (_listAllBucketsCommandAsync == null)
+                if (_listAllBucketsCommandAsync is null)
                 {
                     _listAllBucketsCommandAsync = new DelegateCommandAsync(ListAllBucketsAsync, CanExecute);
                 }
@@ -166,7 +168,7 @@ namespace Ess3.ViewModels
         {
             get
             {
-                if (_downloadFileCommandAsync == null)
+                if (_downloadFileCommandAsync is null)
                 {
                     _downloadFileCommandAsync = new DelegateCommandAsync<Ess3File>(DownloadFileAsync, CanExecute);
                 }
@@ -177,7 +179,7 @@ namespace Ess3.ViewModels
 
         private async Task DownloadFileAsync(Ess3File file)
         {
-            if (file == null) { throw new ArgumentNullException(nameof(file)); }
+            if (file is null) { throw new ArgumentNullException(nameof(file)); }
 
             string downloadDir = GetDownloadDirectory();
             string fileName = GetLocalFileNameFromEss3File(file);
@@ -188,12 +190,7 @@ namespace Ess3.ViewModels
             
             Activity = true;
 
-            HttpStatusCode downloadResult = await S3.DownloadFileAsync(
-                ess3Settings,
-                file,
-                localFilePath,
-                CancellationToken.None,
-                DownloadProgress);
+            HttpStatusCode downloadResult = await S3.DownloadFileAsync(ess3Settings, file, localFilePath, CancellationToken.None, DownloadProgress);
 
             Activity = false;
 
@@ -232,11 +229,13 @@ namespace Ess3.ViewModels
             decimal total = Convert.ToDecimal(e.TotalBytes);
 
             decimal percent = (transferred / total) * 100;
-            
-            Utils.DispatchSafely(
-                Application.Current.Dispatcher,
-                () => OnActivityProgressChanged(null, $"{percent.ToString(progressFormat)} %", Convert.ToDouble(percent)),
-                DispatcherPriority.ApplicationIdle);
+
+            string percentText = string.Format(CultureInfo.CurrentCulture, "{0} %", percent.ToString(progressFormat));
+            double percentDouble = Convert.ToDouble(percent);
+
+            Action updateUI = () => OnActivityProgressChanged(null, percentText, percentDouble);
+
+            updateUI.DispatchSafely(Application.Current.Dispatcher, DispatcherPriority.ApplicationIdle);
         }
 
         private DelegateCommandAsync<Ess3Directory> _uploadFileCommandAsync = null;
@@ -244,7 +243,7 @@ namespace Ess3.ViewModels
         {
             get
             {
-                if (_uploadFileCommandAsync == null)
+                if (_uploadFileCommandAsync is null)
                 {
                     _uploadFileCommandAsync = new DelegateCommandAsync<Ess3Directory>(UploadFileAsync, CanExecute);
                 }
@@ -273,13 +272,7 @@ namespace Ess3.ViewModels
 
                 Activity = true;
 
-                HttpStatusCode uploadResult = await S3.UploadFileInPartsAsync(
-                    ess3Settings,
-                    ofd.FileName,
-                    selectedBucket.BucketName,
-                    prefix,
-                    CancellationToken.None,
-                    UploadProgress);
+                HttpStatusCode uploadResult = await S3.UploadFileInPartsAsync(ess3Settings, ofd.FileName, selectedBucket.BucketName, prefix, CancellationToken.None, UploadProgress);
 
                 Activity = false;
                 
@@ -306,11 +299,13 @@ namespace Ess3.ViewModels
             decimal total = Convert.ToDecimal(e.TotalBytes);
 
             decimal percent = (transferred / total) * 100;
-            
-            Utils.DispatchSafely(
-                Application.Current.Dispatcher,
-                () => OnActivityProgressChanged(null, $"{percent.ToString(progressFormat)} %", Convert.ToDouble(percent)),
-                DispatcherPriority.ApplicationIdle);
+
+            string percentText = string.Format(CultureInfo.CurrentCulture, "{0} %", percent.ToString(progressFormat));
+            double percentDouble = Convert.ToDouble(percent);
+
+            Action updateUI = () => OnActivityProgressChanged(null, percentText, percentDouble);
+
+            updateUI.DispatchSafely(Application.Current.Dispatcher, DispatcherPriority.ApplicationIdle);
         }
 
         private DelegateCommandAsync<Ess3File> _makeFilePublicReadCommandAsync = null;
@@ -318,7 +313,7 @@ namespace Ess3.ViewModels
         {
             get
             {
-                if (_makeFilePublicReadCommandAsync == null)
+                if (_makeFilePublicReadCommandAsync is null)
                 {
                     _makeFilePublicReadCommandAsync = new DelegateCommandAsync<Ess3File>(MakeFilePublicReadAsync, CanExecute);
                 }
@@ -351,7 +346,7 @@ namespace Ess3.ViewModels
         {
             get
             {
-                if (_makeFilePrivateCommandAsync == null)
+                if (_makeFilePrivateCommandAsync is null)
                 {
                     _makeFilePrivateCommandAsync = new DelegateCommandAsync<Ess3File>(MakeFilePrivateAsync, CanExecute);
                 }
@@ -384,7 +379,7 @@ namespace Ess3.ViewModels
         {
             get
             {
-                if (_createDirectoryCommandAsync == null)
+                if (_createDirectoryCommandAsync is null)
                 {
                     _createDirectoryCommandAsync = new DelegateCommandAsync<Ess3Directory>(CreateDirectoryAsync, CanExecute);
                 }
@@ -469,7 +464,7 @@ namespace Ess3.ViewModels
         {
             get
             {
-                if (_deleteDirectoryCommandAsync == null)
+                if (_deleteDirectoryCommandAsync is null)
                 {
                     _deleteDirectoryCommandAsync = new DelegateCommandAsync<Ess3Directory>(DeleteDirectoryAsync, CanExecute);
                 }
@@ -546,7 +541,7 @@ namespace Ess3.ViewModels
         {
             get
             {
-                if (_setS3StorageClassCommandAsync == null)
+                if (_setS3StorageClassCommandAsync is null)
                 {
                     _setS3StorageClassCommandAsync = new DelegateCommandAsync<Ess3File>(SetS3StorageClassAsync, CanExecute);
                 }
@@ -555,38 +550,32 @@ namespace Ess3.ViewModels
             }
         }
 
-        private async Task SetS3StorageClassAsync(Ess3File file)
+        private Task SetS3StorageClassAsync(Ess3File file)
         {
-            if (file == null) { throw new ArgumentNullException(nameof(file)); }
+            if (file is null) { throw new ArgumentNullException(nameof(file)); }
 
             S3StorageClass newClass;
 
             if (file.StorageClass == S3StorageClass.Standard)
             {
-                newClass = S3StorageClass.StandardInfrequentAccess;
+                newClass = S3StorageClass.OneZoneInfrequentAccess;
             }
             else if (file.StorageClass == S3StorageClass.StandardInfrequentAccess)
             {
-                newClass = S3StorageClass.Standard;
+                newClass = S3StorageClass.OneZoneInfrequentAccess;
             }
             else
             {
                 newClass = S3StorageClass.Standard;
             }
 
-            HttpStatusCode result = await S3
-                .SetS3StorageClassAsync(ess3Settings, file, newClass, CancellationToken.None);
+            Activity = true;
 
-            if (result != HttpStatusCode.OK)
-            {
-                MessageBox.Show(
-                    $"Storage class change for {file.Key} failed: {result}",
-                    "Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
+            S3.SetS3StorageClass(ess3Settings, file, newClass);
 
-            await RefreshBucketAsync(file.Bucket);
+            Activity = false;
+
+            return RefreshBucketAsync(file.Bucket);
         }
 
         private DelegateCommandAsync<Ess3File> _deleteFileCommandAsync = null;
@@ -594,7 +583,7 @@ namespace Ess3.ViewModels
         {
             get
             {
-                if (_deleteFileCommandAsync == null)
+                if (_deleteFileCommandAsync is null)
                 {
                     _deleteFileCommandAsync = new DelegateCommandAsync<Ess3File>(DeleteFileAsync, CanExecute);
                 }
@@ -639,7 +628,7 @@ namespace Ess3.ViewModels
 
             sb.AppendLine(GetType().FullName);
             sb.Append(ess3Settings.ToString());
-            sb.AppendLine($"Number of buckets: {Buckets.Count}");
+            sb.AppendLine(string.Format(CultureInfo.CurrentCulture, "Number of buckets: {0}", Buckets.Count));
 
             return sb.ToString();
         }

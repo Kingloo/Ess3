@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Text;
 using Amazon.S3.Model;
 
@@ -7,9 +8,7 @@ namespace Ess3.Model
     public sealed class Ess3Directory : Ess3Object
     {
         #region Properties
-        private readonly ObservableCollection<Ess3Object> _ess3Objects
-            = new ObservableCollection<Ess3Object>();
-        public ObservableCollection<Ess3Object> Ess3Objects => _ess3Objects;
+        public ObservableCollection<Ess3Object> Ess3Objects { get; } = new ObservableCollection<Ess3Object>();
         #endregion
 
         public Ess3Directory(S3Object s3Object, Ess3Bucket ess3Bucket)
@@ -50,7 +49,7 @@ namespace Ess3.Model
 
             sb.AppendLine(GetType().Name);
             sb.Append(base.ToString());
-            sb.AppendLine($"Ess3Objects: {Ess3Objects.Count}");
+            sb.AppendLine(string.Format(CultureInfo.CurrentCulture, "Ess3Objects: {0}", Ess3Objects.Count));
 
             return sb.ToString();
         }

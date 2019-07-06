@@ -1,25 +1,9 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
 
-namespace Ess3
+namespace Ess3.Converters
 {
-    public abstract class GenericBooleanConverter<T> : IValueConverter
-    {
-        public T True { get; set; }
-        public T False { get; set; }
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-            => (bool)value ? True : False;
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => default(T);
-    }
-
-    [ValueConversion(typeof(bool), typeof(Visibility))]
-    public class ProperVisibilityConverter : GenericBooleanConverter<Visibility> { }
-
     [ValueConversion(typeof(long), typeof(string))]
     public class BytesToHumanReadableConverter : IValueConverter
     {
@@ -33,7 +17,7 @@ namespace Ess3
 
             long original = (long)value;
             decimal number = System.Convert.ToDecimal(original);
-            
+
             // first order of magnitude in binary
             decimal bMag = System.Convert.ToDecimal(Math.Pow(2d, 10d));
 
@@ -50,37 +34,37 @@ namespace Ess3
             {
                 return string.Format(culture, "{0:0.##} bytes", number);
             }
-            
+
             if (number < oneMiB)
             {
                 return string.Format(culture, "{0:0.##} KiB", number / oneKiB);
             }
-            
+
             if (number < oneGiB)
             {
                 return string.Format(culture, "{0:0.##} MiB", number / oneMiB);
             }
-            
+
             if (number < oneTiB)
             {
                 return string.Format(culture, "{0:0.##} GiB", number / oneGiB);
             }
-            
+
             if (number < onePiB)
             {
                 return string.Format(culture, "{0:0.##} TiB", number / oneTiB);
             }
-            
+
             if (number < oneEiB)
             {
                 return string.Format(culture, "{0:0.##} PiB", number / onePiB);
             }
-            
+
             if (number < oneZiB)
             {
                 return string.Format(culture, "{0:0.##} EiB", number / oneEiB);
             }
-            
+
             if (number < oneYiB)
             {
                 return string.Format(culture, "{0:0.##} ZiB", number / oneZiB);

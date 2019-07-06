@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Threading;
+using Ess3.Common;
 using Ess3.Model;
 using Ess3.ViewModels;
-using Ess3.Views;
 
-namespace Ess3
+namespace Ess3.Views
 {
     public partial class App : Application
     {
         public App(Ess3Settings settings)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
 
             InitializeComponent();
 
@@ -22,7 +22,7 @@ namespace Ess3
 
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            Log.LogException(e.Exception);
+            Log.Exception(e.Exception);
         }
     }
 }
