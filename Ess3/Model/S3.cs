@@ -17,7 +17,7 @@ namespace Ess3.Model
 {
     public static class S3
     {
-        // AWS S3 enforced limit, correct as of April 2017
+        // AWS S3 enforced limit, correct as of April 2019
         private static readonly Int64 singleCopyMaximumAllowableSize = Convert.ToInt64(Math.Pow(2d, 30d) * 5d); // 2^30 => giga, (* 5) => 5 GiB
 
         // chose a smaller size anyway, for performance reasons
@@ -153,40 +153,6 @@ namespace Ess3.Model
             
             return HttpStatusCode.NotImplemented;
         }
-
-        //public static async Task<HttpStatusCode> DeleteDirectoryAsync(Ess3Settings settings, Ess3Directory directory, bool isDirectoryEmpty, CancellationToken token)
-        //{
-        //    if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-        //    if (directory == null) { throw new ArgumentNullException(nameof(directory)); }
-        //    if (token == null) { token = CancellationToken.None; }
-
-        //    if (isDirectoryEmpty)
-        //    {
-        //        DeleteObjectRequest req = new DeleteObjectRequest
-        //        {
-        //            BucketName = directory.Bucket.BucketName,
-        //            Key = directory.Key
-        //        };
-
-        //        return await DeleteObjectAsync(settings, req, token).ConfigureAwait(false);
-        //    }
-        //    else
-        //    {
-        //        List<KeyVersion> toDelete = directory.Ess3Objects
-        //            .Select(x => new KeyVersion { Key = x.Key })
-        //            .ToList();
-
-        //        toDelete.Add(new KeyVersion { Key = directory.Key });
-
-        //        DeleteObjectsRequest req = new DeleteObjectsRequest
-        //        {
-        //            BucketName = directory.Bucket.BucketName,
-        //            Objects = toDelete
-        //        };
-
-        //        return await DeleteObjectsAsync(settings, req, token).ConfigureAwait(false);
-        //    }
-        //}
 
         public static async Task<HttpStatusCode> DeleteDirectoryAsync(Ess3Settings settings, Ess3Directory directory, bool failOnDirectoryNotEmpty, CancellationToken token)
         {
@@ -401,9 +367,9 @@ namespace Ess3.Model
 
         public static async Task<HttpStatusCode> SetS3StorageClassAsync(Ess3Settings settings, Ess3File file, S3StorageClass storageClass, CancellationToken token)
         {
-            if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-            if (file == null) { throw new ArgumentNullException(nameof(file)); }
-            if (storageClass == null) { throw new ArgumentNullException(nameof(storageClass)); }
+            if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
+            if (file is null) { throw new ArgumentNullException(nameof(file)); }
+            if (storageClass is null) { throw new ArgumentNullException(nameof(storageClass)); }
             if (token == null) { token = CancellationToken.None; }
 
             // check against both just in case someone sets partCopy... incorrectly
@@ -582,7 +548,7 @@ namespace Ess3.Model
 
             Int64 lastByte = 0L;
             
-            // 2^20 => mega, (* 25) => 150 MiB
+            // 2^20 => mega, (* 150) => 150 MiB
             Int64 partSize = Convert.ToInt64(Math.Pow(2d, 20d) * 150d);
 
             Int64 bytePosition = 0L;
