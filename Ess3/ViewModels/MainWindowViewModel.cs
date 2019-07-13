@@ -52,8 +52,7 @@ namespace Ess3.ViewModels
             }
         }
 
-        private readonly ObservableCollection<Ess3Bucket> _buckets
-            = new ObservableCollection<Ess3Bucket>();
+        private readonly ObservableCollection<Ess3Bucket> _buckets = new ObservableCollection<Ess3Bucket>();
         public IReadOnlyCollection<Ess3Bucket> Buckets => _buckets;
         #endregion
 
@@ -76,7 +75,7 @@ namespace Ess3.ViewModels
         {
             S3AccessControlList acl = await S3.GetACLAsync(ess3Settings, obj, CancellationToken.None);
 
-            if (acl == null)
+            if (acl is null)
             {
                 MessageBox.Show(
                     $"Failed to retrieve ACL for {obj.Key}",
@@ -216,7 +215,7 @@ namespace Ess3.ViewModels
 
         private static string GetLocalFileNameFromEss3File(Ess3File file)
         {
-            if (file == null) { throw new ArgumentNullException(nameof(file)); }
+            if (file is null) { throw new ArgumentNullException(nameof(file)); }
 
             string[] segments = file.Key.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -597,10 +596,9 @@ namespace Ess3.ViewModels
 
         private async Task DeleteFileAsync(Ess3File file)
         {
-            if (file == null) { throw new ArgumentNullException(nameof(file)); }
+            if (file is null) { throw new ArgumentNullException(nameof(file)); }
             
-            HttpStatusCode result = await S3
-                .DeleteFileAsync(ess3Settings, file, CancellationToken.None);
+            HttpStatusCode result = await S3.DeleteFileAsync(ess3Settings, file, CancellationToken.None);
 
             // a successful deletion returns NoContent, not OK
             if (result == HttpStatusCode.NoContent)

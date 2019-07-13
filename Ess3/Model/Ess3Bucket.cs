@@ -28,18 +28,10 @@ namespace Ess3.Model
 
         public void AssembleObjectsIntoTree(IEnumerable<Ess3Object> objects)
         {
-            ClearData();
+            _ess3Objects.Clear();
 
-            // these break without .ToList()
-            var allDirectories = objects
-                .Where(x => x is Ess3Directory)
-                .Select(x => (Ess3Directory)x)
-                .ToList();
-
-            var allFiles = objects
-                .Where(x => x is Ess3File)
-                .Select(x => (Ess3File)x)
-                .ToList();
+            var allDirectories = objects.Where(x => x.IsDirectory).Cast<Ess3Directory>().ToList();
+            var allFiles = objects.Where(x => !x.IsDirectory).Cast<Ess3File>().ToList();
 
             // retaining this order sorts directories before files in the TreeView
             PutEveryDirectoryIntoDirectory(allDirectories);
@@ -66,8 +58,6 @@ namespace Ess3.Model
                 eachDir.Ess3Objects.AddMissing(allFiles.Where(x => x.Prefix.Equals(eachDir.Key)));
             }
         }
-        
-        public void ClearData() => _ess3Objects.Clear();
 
         public override string ToString()
         {

@@ -3,6 +3,8 @@ using System.Text;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Ess3.Model
 {
@@ -43,11 +45,30 @@ namespace Ess3.Model
             S3Config = new AmazonS3Config { RegionEndpoint = endpoint };
         }
 
+        public static Ess3Settings Parse(string rawJson)
+        {
+            try
+            {
+                JObject json = JObject.Parse(rawJson);
+
+                string accessKey = (string)json["AWSAccessKey"];
+                string secretKey = (string)json["AWSSecretKey"];
+
+                RegionEndpoint endpoint = RegionEndpoint.GetBySystemName((string)json["EndpointSystemName"]);
+
+                return new Ess3Settings(accessKey, secretKey, endpoint);
+            }
+            catch (JsonReaderException)
+            {
+                return null;
+            }
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine(GetType().Name);
+            sb.AppendLine(GetType().FullName);
             sb.AppendLine($"Access Key: {awsAccessKey}");
             sb.AppendLine($"Secret Key: {awsSecretKey}");
             sb.AppendLine($"Region Endpoint: {S3Config.RegionEndpoint.DisplayName}");

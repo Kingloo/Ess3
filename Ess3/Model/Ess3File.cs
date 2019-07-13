@@ -16,30 +16,28 @@ namespace Ess3.Model
         {
             if (String.IsNullOrWhiteSpace(p)) { throw new ArgumentNullException(nameof(p)); }
 
-            int indexOfLastSlash = p.LastIndexOf(@"/");
+            string slashString = @"/";
+            Char slashChar = Char.Parse(slashString);
+
+            int indexOfLastSlash = p.LastIndexOf(slashChar);
 
             if (indexOfLastSlash > 0)
             {
                 string raw = p.Substring(0, indexOfLastSlash);
 
-                return raw.EndsWith(@"/") ? raw : $"{raw}/";
+                return raw.EndsWith(slashString) ? raw : $"{raw}{slashString}";
             }
             
             return string.Empty;
         }
 
-        public bool Equals(Ess3File other)
-        {
-            if (other == null) { return false; }
-
-            return Key.Equals(other.Key);
-        }
+        public bool Equals(Ess3File other) => (other is null) ? false : Key.Equals(other.Key);
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine(GetType().Name);
+            sb.AppendLine(GetType().FullName);
             sb.Append(base.ToString());
 
             return sb.ToString();

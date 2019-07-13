@@ -10,75 +10,41 @@ namespace Ess3.Model
     public abstract class Ess3Object : BindableBase, IEquatable<Ess3Object>, IComparable<Ess3Object>
     {
         #region Properties
-        private readonly Ess3Bucket _bucket = null;
-        public Ess3Bucket Bucket => _bucket;
-
-        private readonly string _key = string.Empty;
-        public string Key => _key;
-
-        private string _prefix = string.Empty;
-        public string Prefix
-        {
-            get => _prefix;
-            set => _prefix = value;
-        }
-
-        private bool _isDirectory = false;
-        public bool IsDirectory => _isDirectory;
-
-        public bool IsAtBucketRoot
-            => String.IsNullOrEmpty(Prefix);
-
-        private readonly string _etag = string.Empty;
-        public string Etag => _etag;
-
-        private readonly DateTime _lastModified = DateTime.MinValue;
-        public DateTime LastModified => _lastModified;
-
-        private readonly Owner _owner = null;
-        public Owner Owner => _owner;
-
-        private readonly long _size = 0L;
-        public long Size => _size;
-
-        private readonly S3StorageClass _storageClass = S3StorageClass.Standard;
-        public S3StorageClass StorageClass => _storageClass;
-
-        private S3AccessControlList _acl = null;
-        public S3AccessControlList ACL
-        {
-            get
-            {
-                return _acl;
-            }
-            set
-            {
-                _acl = value;
-
-                RaisePropertyChanged(nameof(ACL));
-            }
-        }
+        public Ess3Bucket Bucket { get; } = null;
+        public string Key { get; } = string.Empty;
+        public string Prefix { get; protected set; }
+        public bool IsDirectory { get; } = false;
+        public bool IsAtBucketRoot => String.IsNullOrEmpty(Prefix);
+        public string Etag { get; } = string.Empty;
+        public DateTime LastModified { get; } = DateTime.MinValue;
+        public Owner Owner { get; } = null;
+        public Int64 Size { get; protected set; } = 0L;
+        public S3StorageClass StorageClass { get; } = S3StorageClass.Standard;
+        public S3AccessControlList ACL { get; } = null;
         #endregion
 
         protected Ess3Object(S3Object s3Object, Ess3Bucket ess3Bucket, bool isDirectory)
         {
-            _etag = s3Object.ETag;
-            _key = s3Object.Key;
-            _lastModified = s3Object.LastModified;
-            _owner = s3Object.Owner;
-            _size = s3Object.Size;
-            _storageClass = s3Object.StorageClass;
+            if (s3Object is null) { throw new ArgumentNullException(nameof(s3Object)); }
+            if (ess3Bucket is null) { throw new ArgumentNullException(nameof(ess3Bucket)); }
 
-            _isDirectory = isDirectory;
+            Etag = s3Object.ETag;
+            Key = s3Object.Key;
+            LastModified = s3Object.LastModified;
+            Owner = s3Object.Owner;
+            Size = s3Object.Size;
+            StorageClass = s3Object.StorageClass;
 
-            _bucket = ess3Bucket;
+            IsDirectory = isDirectory;
+
+            Bucket = ess3Bucket;
         }
 
         public abstract string GetPrefix(string p);
         
         public bool Equals(Ess3Object other)
         {
-            if (other == null) { return false; }
+            if (other is null) { return false; }
 
             if (IsDirectory != other.IsDirectory)
             {
@@ -130,7 +96,7 @@ namespace Ess3.Model
 
         public int CompareTo(Ess3Object other)
         {
-            if (other == null) { throw new ArgumentNullException(nameof(other)); }
+            if (other is null) { throw new ArgumentNullException(nameof(other)); }
 
             Type t = other.GetType();
 
