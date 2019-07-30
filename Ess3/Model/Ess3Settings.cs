@@ -10,9 +10,6 @@ namespace Ess3.Model
 {
     public class Ess3Settings
     {
-        private readonly string awsAccessKey = string.Empty;
-        private readonly string awsSecretKey = string.Empty;
-
         private readonly BasicAWSCredentials credentials = null;
 
         public AmazonS3Config S3Config { get; } = null;
@@ -38,14 +35,15 @@ namespace Ess3.Model
                 throw new ArgumentNullException(nameof(endpoint));
             }
 
-            this.awsAccessKey = awsAccessKey;
-            this.awsSecretKey = awsSecretKey;
+            credentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
 
-            credentials = new BasicAWSCredentials(this.awsAccessKey, this.awsSecretKey);
-            S3Config = new AmazonS3Config { RegionEndpoint = endpoint };
+            S3Config = new AmazonS3Config
+            {
+                RegionEndpoint = endpoint
+            };
         }
 
-        public static Ess3Settings Parse(string rawJson)
+        public static bool TryParse(string rawJson, out Ess3Settings settings)
         {
             try
             {
@@ -56,11 +54,15 @@ namespace Ess3.Model
 
                 RegionEndpoint endpoint = RegionEndpoint.GetBySystemName((string)json["EndpointSystemName"]);
 
-                return new Ess3Settings(accessKey, secretKey, endpoint);
+                settings = new Ess3Settings(accessKey, secretKey, endpoint);
+
+                return true;
             }
             catch (JsonReaderException)
             {
-                return null;
+                settings = null;
+
+                return false;
             }
         }
 
@@ -69,8 +71,6 @@ namespace Ess3.Model
             StringBuilder sb = new StringBuilder();
 
             sb.AppendLine(GetType().FullName);
-            sb.AppendLine($"Access Key: {awsAccessKey}");
-            sb.AppendLine($"Secret Key: {awsSecretKey}");
             sb.AppendLine($"Region Endpoint: {S3Config.RegionEndpoint.DisplayName}");
 
             return sb.ToString();

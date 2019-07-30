@@ -18,14 +18,18 @@ namespace Ess3
         {
             FileInfo settingsFile = new FileInfo(Path.Combine(directory, filename));
 
+            if (!settingsFile.Exists)
+            {
+                MessageBox.Show("Error", "Settings file not found", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                return -1;
+            }
+
             Ess3Settings ess3Settings = LoadSettings(settingsFile);
 
             if (ess3Settings is null)
             {
-                string text = "Fatal Error!";
-                string caption = "No settings file found";
-
-                MessageBox.Show(text, caption, MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error", "Settings file didn't parse", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 return -1;
             }
@@ -60,11 +64,22 @@ namespace Ess3
 
                     string contents = sr.ReadToEnd();
 
-                    return Ess3Settings.Parse(contents);
+                    if (Ess3Settings.TryParse(contents, out Ess3Settings settings))
+                    {
+                        return settings;
+                    }
+                    else
+                    {
+                        Log.Message("failed to parse settings!");
+
+                        return null;
+                    }
                 }
             }
             catch (FileNotFoundException)
             {
+                Log.Message("settings file not found!");
+
                 return null;
             }
             finally
