@@ -12,17 +12,26 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Ess3.Gui.Interfaces;
+using Ess3.Gui.ViewModels;
 
-namespace Ess3.Gui
+namespace Ess3.Gui.Views
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly IMainWindowViewModel viewModel;
+
         public MainWindow()
+            : this(new MainWindowViewModel())
+        { }
+
+        public MainWindow(IMainWindowViewModel viewModel)
         {
             InitializeComponent();
+
+            this.viewModel = viewModel;
+
+            DataContext = this.viewModel;
         }
     }
 }

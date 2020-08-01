@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="Ess3.Gui.Views.OperationsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Ess3.Gui.Views"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase">
+
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="operationsSortedByCreated"
+                              Source="{Binding Operations, Mode=OneTime}"
+                              IsLiveSortingRequested="True">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Created" Direction="Ascending" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </UserControl.Resources>
+
+    <DataGrid ItemsSource="{Binding Source={StaticResource operationsSortedByCreated}}" />
+</UserControl>

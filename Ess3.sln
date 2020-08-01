@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ess3.Gui", "Ess3.Gui\Ess3.Gui.csproj", "{A7FCAD7E-71D8-4094-8D8C-539ACE66D0DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ess3.Gui", "Ess3.Gui\Ess3.Gui.csproj", "{A7FCAD7E-71D8-4094-8D8C-539ACE66D0DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ess3.Lib", "Ess3.Lib\Ess3.Lib.csproj", "{AD5B1120-E529-486F-A095-4AED254FDA6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ess3.Library", "Ess3.Library\Ess3.Library.csproj", "{AD5B1120-E529-486F-A095-4AED254FDA6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ess3.Test", "Ess3.Test\Ess3.Test.csproj", "{D90C96A0-6A75-47CD-926D-541F8FA68132}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ess3.Test", "Ess3.Test\Ess3.Test.csproj", "{D90C96A0-6A75-47CD-926D-541F8FA68132}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,9 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A7FCAD7E-71D8-4094-8D8C-539ACE66D0DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -58,5 +55,11 @@ Global
 		{D90C96A0-6A75-47CD-926D-541F8FA68132}.Release|x64.Build.0 = Release|Any CPU
 		{D90C96A0-6A75-47CD-926D-541F8FA68132}.Release|x86.ActiveCfg = Release|Any CPU
 		{D90C96A0-6A75-47CD-926D-541F8FA68132}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E61C3B8B-FDE1-4C22-9188-E7BCAD372BEE}
 	EndGlobalSection
 EndGlobal

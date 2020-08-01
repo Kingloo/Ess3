@@ -4,6 +4,28 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+    <StartupObject>Ess3.Gui.Program</StartupObject>
+    <ApplicationIcon>Assets\Ess3_Logo.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
+    <PrivateAssets>all</PrivateAssets>
+    <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+  </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Views\AccountControl.xaml" />
+    <None Remove="Views\FileControl.xaml" />
+    <None Remove="Views\OperationsControl.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ess3.Library\Ess3.Library.csproj" />
+  </ItemGroup>
 
 </Project>
