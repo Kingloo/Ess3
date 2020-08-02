@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <None Remove="Views\AccountControl.xaml" />
+    <None Remove="Views\AddAccountWindow.xaml" />
     <None Remove="Views\FileControl.xaml" />
     <None Remove="Views\OperationsControl.xaml" />
   </ItemGroup>

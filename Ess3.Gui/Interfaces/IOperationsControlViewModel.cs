@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Ess3.Library;
+using Ess3.Library.Interfaces;
 
 namespace Ess3.Gui.Interfaces
 {

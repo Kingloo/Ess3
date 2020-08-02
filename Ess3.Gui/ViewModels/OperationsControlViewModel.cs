@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using Ess3.Gui.Interfaces;
 using Ess3.Library;
+using Ess3.Library.Interfaces;
 
 namespace Ess3.Gui.ViewModels
 {

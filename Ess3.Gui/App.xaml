@@ -16,8 +16,32 @@
         <Style TargetType="{x:Type ItemsPresenter}" BasedOn="{StaticResource {x:Type FrameworkElement}}" />
         <Style TargetType="{x:Type Grid}" BasedOn="{StaticResource {x:Type FrameworkElement}}" />
         <Style TargetType="{x:Type StackPanel}" BasedOn="{StaticResource {x:Type FrameworkElement}}" />
-        <Style TargetType="{x:Type Control}" BasedOn="{StaticResource {x:Type FrameworkElement}}" />
+
+        <Style TargetType="{x:Type Control}" BasedOn="{StaticResource {x:Type FrameworkElement}}">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontFamily" Value="Calibri" />
+        </Style>
+
         <Style TargetType="{x:Type ItemsControl}" BasedOn="{StaticResource {x:Type Control}}" />
+
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type Control}}">
+            <Setter Property="MaxLines" Value="1" />
+            <Setter Property="MinLines" Value="1" />
+            <Setter Property="Height" Value="70" />
+            <Setter Property="Width" Value="Auto" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        
+        <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Type Control}}">
+            <Setter Property="Height" Value="70" />
+            <Setter Property="MaxWidth" Value="300" />
+            <Setter Property="MinWidth" Value="200" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
 
         <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Control}}">
             <Setter Property="VerticalContentAlignment" Value="Center" />

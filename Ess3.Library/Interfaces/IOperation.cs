@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ess3.Library
+namespace Ess3.Library.Interfaces
 {
     public interface IOperation
     {

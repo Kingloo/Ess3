@@ -10,17 +10,26 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Ess3.Gui.Interfaces;
+using Ess3.Gui.ViewModels;
 
 namespace Ess3.Gui.Views
 {
-    /// <summary>
-    /// Interaction logic for AccountControl.xaml
-    /// </summary>
     public partial class AccountControl : UserControl
     {
+        private readonly IAccountControlViewModel viewModel;
+
         public AccountControl()
+            : this(new AccountControlViewModel())
+        { }
+
+        public AccountControl(IAccountControlViewModel viewModel)
         {
             InitializeComponent();
+
+            this.viewModel = viewModel;
+
+            DataContext = this.viewModel;
         }
     }
 }
