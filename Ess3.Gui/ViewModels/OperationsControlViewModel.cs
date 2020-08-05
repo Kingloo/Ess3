@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
+using Ess3.Gui.Common;
 using Ess3.Gui.Interfaces;
 using Ess3.Library;
 using Ess3.Library.Interfaces;
 
 namespace Ess3.Gui.ViewModels
 {
-    public class OperationsControlViewModel : IOperationsControlViewModel
+    public class OperationsControlViewModel : BindableBase, IOperationsControlViewModel
     {
         private readonly ObservableCollection<IOperation> _operations = new ObservableCollection<IOperation>();
         public IReadOnlyCollection<IOperation> Operations => _operations;

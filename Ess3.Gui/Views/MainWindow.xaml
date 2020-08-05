@@ -1,7 +1,8 @@
 ﻿<Window x:Class="Ess3.Gui.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:Ess3.Gui.Views">
+        xmlns:local="clr-namespace:Ess3.Gui.Views"
+        Closing="Window_Closing">
 
     <Window.Style>
         <Style TargetType="{x:Type Window}" BasedOn="{StaticResource {x:Type Window}}">
@@ -27,9 +28,13 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <local:AccountControl Grid.Row="0" Background="LightGray" />
+        <local:AccountControl Grid.Row="0"
+                              Background="LightGray"
+                              AccountChanged="AccountControl_AccountChanged" />
 
-        <local:FileControl Grid.Row="1" Background="LightBlue" />
+        <local:FileControl Grid.Row="1"
+                           x:Name="fileControl"
+                           Background="LightBlue" />
 
         <local:OperationsControl Grid.Row="2" Background="LightGreen">
             <local:OperationsControl.Style>

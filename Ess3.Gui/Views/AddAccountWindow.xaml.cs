@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using Ess3.Gui.Interfaces;
 using Ess3.Gui.ViewModels;
 
@@ -41,6 +42,14 @@ namespace Ess3.Gui.Views
         private void addButton_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            UnregisterName(nameof(awsAccessKeyTextBox));
+            UnregisterName(nameof(awsSecretKeyTextBox));
+            UnregisterName(nameof(validateButton));
+            UnregisterName(nameof(addButton));
         }
     }
 }

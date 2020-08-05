@@ -34,6 +34,7 @@
             <Setter Property="Height" Value="30" />
             <Setter Property="Width" Value="Auto" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="UndoLimit" Value="5" />
         </Style>
         
         <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Type Control}}">

@@ -12,7 +12,7 @@ using Ess3.Library.S3;
 
 namespace Ess3.Gui.ViewModels
 {
-    public class AccountControlViewModel : IAccountControlViewModel
+    public class AccountControlViewModel : BindableBase, IAccountControlViewModel
     {
         private readonly ObservableCollection<IAccount> _accounts = new ObservableCollection<IAccount>();
         public IReadOnlyCollection<IAccount> Accounts => _accounts;
@@ -59,7 +59,28 @@ namespace Ess3.Gui.ViewModels
             }
         }
 
+        private DelegateCommand<IAccount?>? _setSelectedAccountCommand = null;
+        public DelegateCommand<IAccount?> SetSelectedAccountCommand
+        {
+            get
+            {
+                if (_setSelectedAccountCommand is null)
+                {
+                    _setSelectedAccountCommand = new DelegateCommand<IAccount?>(SetSelectedAccount, (_) => true);
+                }
+
+                return _setSelectedAccountCommand;
+            }
+        }
+
         private bool CanExecute(object _) => true;
+
+        private IAccount? _selectedAccount = null;
+        public IAccount? SelectedAccount
+        {
+            get => _selectedAccount;
+            set => SetProperty(ref _selectedAccount, value, nameof(SelectedAccount));
+        }
 
         public AccountControlViewModel()
         {
@@ -100,35 +121,62 @@ namespace Ess3.Gui.ViewModels
         {
             var addAccountWindow = new AddAccountWindow();
 
-            var returned = addAccountWindow.ShowDialog();
+            bool? returned = addAccountWindow.ShowDialog();
 
             if (returned.HasValue && returned.Value)
             {
-                var vm = (IAddAccountWindowViewModel)addAccountWindow.DataContext;
+                var addAccountWindowViewModel = (IAddAccountWindowViewModel)addAccountWindow.DataContext;
 
-                if (vm.Account is null)
+                if (addAccountWindowViewModel.Account is null)
                 {
                     throw new Exception("validating account failed");
                 }
 
-                _accounts.Add(vm.Account);
+                AddAccount(addAccountWindowViewModel.Account);
             }
         }
 
         public void AddAccount(IAccount account)
         {
-            _accounts.Add(account);
+            if (!_accounts.Contains(account))
+            {
+                _accounts.Add(account);
+            }
         }
 
         public void RemoveAccount(IAccount account)
         {
-            _accounts.Remove(account);
+            if (_accounts.Contains(account))
+            {
+                _accounts.Remove(account);
+            }
+        }
+
+        public void SetSelectedAccount(IAccount? account)
+        {
+            SelectedAccount = account;
         }
 
         private void AddFakeAccounts()
         {
-            _accounts.Add(new Account { DisplayName = "fred.jones" });
-            _accounts.Add(new Account { DisplayName = "claudia.black" });
+            var fred = new Account
+            {
+                DisplayName = "fred.jones",
+                AWSAccessKey = "fredjonessaccesskey"
+            };
+            fred.AddFakeBuckets();
+            fred.AddFakeFiles();
+
+            var claudia = new Account
+            {
+                DisplayName = "claudia.black",
+                AWSAccessKey = "claudiablackssecretkey"
+            };
+            claudia.AddFakeBuckets();
+            claudia.AddFakeFiles();
+
+            AddAccount(fred);
+            AddAccount(claudia);
         }
     }
 }

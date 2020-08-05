@@ -13,13 +13,18 @@ namespace Ess3.Library.S3
 {
     public static class S3Helpers
     {
+        public static RegionEndpoint DefaultEndpoint { get; set; } = RegionEndpoint.EUWest1;
+
+        public static Task<bool> ValidateAccountAsync(IAccount account)
+            => ValidateAccountAsync(account, DefaultEndpoint);
+
         /// <summary>
         /// Validates whether an account's keys are valid credentials.
-        /// If successful, it also sets DisplayName, Id and marks it as validated.
+        /// If successful, it sets DisplayName and Id, and marks it as validated.
         /// </summary>
         /// <param name="account">The account object to validate.</param>
         /// <returns>An account is considered validated if the keys can list its buckets.</returns>
-        public static async Task<bool> ValidateAccountAsync(IAccount account)
+        public static async Task<bool> ValidateAccountAsync(IAccount account, RegionEndpoint endpoint)
         {
             if (account is null) { throw new ArgumentNullException(nameof(account)); }
 
@@ -27,7 +32,7 @@ namespace Ess3.Library.S3
 
             var basicCreds = new BasicAWSCredentials(account.AWSAccessKey, account.AWSSecretKey);
             
-            using (IAmazonS3 client = new AmazonS3Client(basicCreds, RegionEndpoint.EUWest1))
+            using (IAmazonS3 client = new AmazonS3Client(basicCreds, endpoint))
             {
                 try
                 {
@@ -48,13 +53,16 @@ namespace Ess3.Library.S3
             return isValidated;
         }
 
+        public static Task<Int64> GetBucketSizeAsync(IAccount account, string bucketName)
+            => GetBucketSizeAsync(account, bucketName, DefaultEndpoint);
+
         /// <summary>
         /// Gets the total size of the objects in a bucket.
         /// </summary>
         /// <param name="account">The AWS account to query.</param>
         /// <param name="bucketName">The bucket for which to calculate total size.</param>
         /// <returns>-1 means bucket name was null or empty. -2 means bucket does not exist.</returns>
-        public static async Task<Int64> GetBucketSizeAsync(IAccount account, string bucketName)
+        public static async Task<Int64> GetBucketSizeAsync(IAccount account, string bucketName, RegionEndpoint endpoint)
         {
             if (account is null) { throw new ArgumentNullException(nameof(account)); }
 
@@ -67,7 +75,7 @@ namespace Ess3.Library.S3
 
             var basicCreds = new BasicAWSCredentials(account.AWSAccessKey, account.AWSSecretKey);
 
-            using (IAmazonS3 client = new AmazonS3Client(basicCreds, RegionEndpoint.EUWest1))
+            using (IAmazonS3 client = new AmazonS3Client(basicCreds, endpoint))
             {
                 var request = new ListObjectsV2Request { BucketName = bucketName };
 

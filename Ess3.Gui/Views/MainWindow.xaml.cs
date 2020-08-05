@@ -1,17 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
 using Ess3.Gui.Interfaces;
 using Ess3.Gui.ViewModels;
 
@@ -32,6 +19,16 @@ namespace Ess3.Gui.Views
             this.viewModel = viewModel;
 
             DataContext = this.viewModel;
+        }
+
+        private void AccountControl_AccountChanged(object sender, AccountChangedEventArgs e)
+        {
+            ((IFileControlViewModel)fileControl.DataContext).Account = e.Account;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            UnregisterName("fileControl");
         }
     }
 }

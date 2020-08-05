@@ -29,6 +29,7 @@
 
         <ComboBox Grid.Column="0"
                   Name="comboBox"
+                  SelectionChanged="comboBox_SelectionChanged"
                   ItemsSource="{Binding Source={StaticResource sortedAccounts}}">
             <ComboBox.Style>
                 <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Type ComboBox}}">
