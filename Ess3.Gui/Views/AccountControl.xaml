@@ -15,7 +15,7 @@
                                   Source="{Binding Accounts, Mode=OneTime}"
                                   IsLiveSortingRequested="True">
                 <CollectionViewSource.SortDescriptions>
-                    <scm:SortDescription PropertyName="Name" Direction="Ascending" />
+                    <scm:SortDescription PropertyName="DisplayName" Direction="Ascending" />
                 </CollectionViewSource.SortDescriptions>
             </CollectionViewSource>
         </Grid.Resources>
@@ -53,8 +53,18 @@
             <ComboBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type ess3LibraryInterfaces:IAccount}">
                     <Label>
+                        <Label.Style>
+                            <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
+                                <Setter Property="Foreground" Value="Red" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsValidated}" Value="True">
+                                        <Setter Property="Foreground" Value="Green" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Label.Style>
                         <Label.Content>
-                            <TextBlock Text="{Binding Name, Mode=OneTime}"
+                            <TextBlock Text="{Binding DisplayName, Mode=OneTime}"
                                        TextTrimming="CharacterEllipsis" />
                         </Label.Content>
                     </Label>

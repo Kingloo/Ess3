@@ -34,9 +34,6 @@ namespace Ess3.Gui.Views
 
             if (isValid)
             {
-                viewModel.AWSAccessKey = awsAccessKey;
-                viewModel.AWSSecretKey = awsSecretKey;
-
                 addButton.IsEnabled = true;
             }
         }

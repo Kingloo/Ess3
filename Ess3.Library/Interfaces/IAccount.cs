@@ -2,9 +2,10 @@
 {
     public interface IAccount
     {
-        string Name { get; set; }
+        string DisplayName { get; set; }
         string Id { get; set; }
         string AWSAccessKey { get; set; }
         string AWSSecretKey { get; set; }
+        bool IsValidated { get; set; }
     }
 }

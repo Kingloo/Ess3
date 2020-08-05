@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Ess3.Gui.Common;
 using Ess3.Gui.Interfaces;
 using Ess3.Gui.Views;
 using Ess3.Library;
 using Ess3.Library.Interfaces;
+using Ess3.Library.S3;
 
 namespace Ess3.Gui.ViewModels
 {
@@ -62,16 +63,36 @@ namespace Ess3.Gui.ViewModels
 
         public AccountControlViewModel()
         {
-            //AddFakeData();
+            AddFakeAccounts();
         }
 
         public async Task UpdateAccountAsync(IAccount account)
         {
-            if (!(account is null))
+            if (account is null)
             {
-                await Task.Delay(TimeSpan.FromSeconds(0.8d)).ConfigureAwait(false);
+                Debug.WriteLine("account was null");
+                return;
+            }
 
-                account.Name = "fred.jones " + DateTime.Now.ToShortTimeString();
+            if (!account.IsValidated)
+            {
+                Debug.WriteLine($"account has not been validated (displayName: {account.DisplayName}, accessKey: {account.AWSAccessKey})");
+                return;
+            }
+
+            Int64 bucketSize = await S3Helpers.GetBucketSizeAsync(account, "kingloobackup");
+
+            switch (bucketSize)
+            {
+                case -1L:
+                    Debug.WriteLine("bucket name was null or empty");
+                    break;
+                case -2L:
+                    Debug.WriteLine("bucket does not exist");
+                    break;
+                default:
+                    Debug.WriteLine($"bucket size: {bucketSize}");
+                    break;
             }
         }
 
@@ -85,13 +106,12 @@ namespace Ess3.Gui.ViewModels
             {
                 var vm = (IAddAccountWindowViewModel)addAccountWindow.DataContext;
 
-                IAccount account = new Account
+                if (vm.Account is null)
                 {
-                    AWSAccessKey = vm.AWSAccessKey,
-                    AWSSecretKey = vm.AWSSecretKey
-                };
+                    throw new Exception("validating account failed");
+                }
 
-                _accounts.Add(account);
+                _accounts.Add(vm.Account);
             }
         }
 
@@ -105,10 +125,10 @@ namespace Ess3.Gui.ViewModels
             _accounts.Remove(account);
         }
 
-        private void AddFakeData()
+        private void AddFakeAccounts()
         {
-            _accounts.Add(new Account { Name = "fred.jones" });
-            _accounts.Add(new Account { Name = "claudia.black" });
+            _accounts.Add(new Account { DisplayName = "fred.jones" });
+            _accounts.Add(new Account { DisplayName = "claudia.black" });
         }
     }
 }

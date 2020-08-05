@@ -15,7 +15,7 @@ namespace Ess3.Test.Ess3.Gui
         {
             IAccountControlViewModel vm = new AccountControlViewModel();
 
-            vm.AddAccount(new Account { Name = "test account" });
+            vm.AddAccount(new Account { DisplayName = "test account" });
 
             int expected = 1;
             int actual = vm.Accounts.Count;
@@ -28,7 +28,7 @@ namespace Ess3.Test.Ess3.Gui
         {
             IAccountControlViewModel vm = new AccountControlViewModel();
 
-            IAccount account = new Account { Name = "test account" };
+            IAccount account = new Account { DisplayName = "test account" };
 
             vm.AddAccount(account);
 

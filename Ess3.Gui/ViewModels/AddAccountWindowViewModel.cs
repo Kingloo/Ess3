@@ -1,21 +1,26 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Ess3.Gui.Interfaces;
+using Ess3.Library;
+using Ess3.Library.Interfaces;
+using Ess3.Library.S3;
 
 namespace Ess3.Gui.ViewModels
 {
     public class AddAccountWindowViewModel : IAddAccountWindowViewModel
     {
-        public string AWSAccessKey { get; set; } = string.Empty;
-        public string AWSSecretKey { get; set; } = string.Empty;
+        public IAccount? Account { get; private set; }
 
         public AddAccountWindowViewModel() { }
 
-        public async Task<bool> ValidateAsync(string awsAccessKey, string awsSecretKey)
+        public Task<bool> ValidateAsync(string awsAccessKey, string awsSecretKey)
         {
-            await Task.Delay(TimeSpan.FromSeconds(0.5d)).ConfigureAwait(false);
+            Account = new Account
+            {
+                AWSAccessKey = awsAccessKey,
+                AWSSecretKey = awsSecretKey
+            };
 
-            return true;
+            return S3Helpers.ValidateAccountAsync(Account);
         }
     }
 }

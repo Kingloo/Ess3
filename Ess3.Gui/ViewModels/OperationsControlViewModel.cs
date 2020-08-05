@@ -15,7 +15,7 @@ namespace Ess3.Gui.ViewModels
 
         public OperationsControlViewModel()
         {
-            //AddFakeData();
+            AddFakeData();
         }
 
         private void AddFakeData()

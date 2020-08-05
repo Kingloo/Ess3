@@ -1,33 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using Ess3.Library.Interfaces;
 
 namespace Ess3.Library
 {
     public class Account : IAccount
     {
-        private string _name = string.Empty;
-        public string Name
+        private string _displayName = string.Empty;
+        public string DisplayName
         {
             get
             {
-                if (String.IsNullOrWhiteSpace(_name))
+                if (String.IsNullOrWhiteSpace(_displayName))
                 {
                     return AWSAccessKey;
                 }
                 else
                 {
-                    return _name;
+                    return _displayName;
                 }
             }
-            set => _name = value;
+            set => _displayName = value;
         }
 
         public string Id { get; set; } = string.Empty;
         public string AWSAccessKey { get; set; } = string.Empty;
         public string AWSSecretKey { get; set; } = string.Empty;
+        public bool IsValidated { get; set; } = false;
 
         public Account() { }
     }
