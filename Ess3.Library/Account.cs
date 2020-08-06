@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Amazon.Runtime;
 using Ess3.Library.Common;
 using Ess3.Library.Interfaces;
 using Ess3.Library.Model;
@@ -59,6 +60,8 @@ namespace Ess3.Library
         public IReadOnlyCollection<Ess3Bucket> Buckets => _buckets;
 
         public Account() { }
+
+        public AWSCredentials GetCredentials() => new BasicAWSCredentials(AWSAccessKey, AWSSecretKey);
 
         public void AddFile(Ess3File file)
         {

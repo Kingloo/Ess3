@@ -26,8 +26,17 @@ namespace Ess3.Library.Model
             CreationDate = bucket.CreationDate;
         }
 
+        public Ess3Bucket(string bucketName)
+            : this(bucketName, DateTime.Now)
+        { }
+
         public Ess3Bucket(string bucketName, DateTime creationDate)
         {
+            if (String.IsNullOrEmpty(bucketName))
+            {
+                throw new ArgumentNullException(nameof(bucketName));
+            }
+
             BucketName = bucketName;
             CreationDate = creationDate;
         }

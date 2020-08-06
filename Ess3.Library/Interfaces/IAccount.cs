@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Amazon.Runtime;
 using Ess3.Library.Model;
 
 namespace Ess3.Library.Interfaces
@@ -12,6 +13,8 @@ namespace Ess3.Library.Interfaces
         string AWSSecretKey { get; set; }
         bool IsValidated { get; set; }
         IReadOnlyCollection<Ess3Bucket> Buckets { get; }
+
+        AWSCredentials GetCredentials();
 
         public void AddFile(Ess3File file);
         public void RemoveFile(Ess3File file);

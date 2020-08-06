@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Ess3.Gui\Ess3.Gui.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Ess3.Library\" />
+  </ItemGroup>
+
 </Project>
