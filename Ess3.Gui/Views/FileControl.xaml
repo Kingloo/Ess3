@@ -2,9 +2,63 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:converters="clr-namespace:Ess3.Gui.Converters"
              xmlns:ess3Model="clr-namespace:Ess3.Library.Model;assembly=Ess3.Library">
 
-    <Grid>
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="sortedBuckets"
+                              Source="{Binding Account.Buckets}"
+                              IsLiveSortingRequested="True">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="BucketName" Direction="Ascending" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+        <converters:BytesToHumanReadableConverter x:Key="bytesToHumanReadableConverter" />
+    </UserControl.Resources>
+    
+    <TabControl ItemsSource="{Binding Source={StaticResource sortedBuckets}}">
+        <TabControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type ess3Model:Ess3Bucket}">
+                <StackPanel Orientation="Horizontal"
+                            Height="50">
+                    <Image Source="/Assets/Bucket.png"
+                           Height="25"
+                           Width="25"
+                           ClipToBounds="True" />
+                    <Label>
+                        <Label.Content>
+                            <TextBlock Text="{Binding BucketName}" />
+                        </Label.Content>
+                    </Label>
+                </StackPanel>
+            </DataTemplate>
+        </TabControl.ItemTemplate>
+        
+        <TabControl.ContentTemplate>
+            <DataTemplate DataType="{x:Type ess3Model:Ess3Bucket}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    
+                    <StackPanel Grid.Row="0"
+                                Orientation="Horizontal">
+                        <Label Content="{Binding CreationDate}" />
+                        <Label Content="{Binding Size, Converter={StaticResource bytesToHumanReadableConverter}}" />
+                        <Label Content="{Binding Directories.Count}" ContentStringFormat="" />
+                        <Label Content="{Binding Files.Count}" ContentStringFormat="" />
+                    </StackPanel>
+                    
+                    <!--<TreeView Grid.Row="1"
+                              ItemsSource="{Binding }"-->
+                </Grid>
+            </DataTemplate>
+        </TabControl.ContentTemplate>
+    </TabControl>
+
+    <!--<Grid>
         <Grid.Resources>
             <CollectionViewSource x:Key="sortedBuckets"
                                   Source="{Binding Account.Buckets}"
@@ -36,6 +90,6 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-    </Grid>
+    </Grid>-->
     
 </UserControl>

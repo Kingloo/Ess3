@@ -16,6 +16,9 @@ namespace Ess3.Library.S3
     {
         public static RegionEndpoint DefaultEndpoint { get; set; } = RegionEndpoint.EUWest1;
 
+        public static Task<bool> ValidateAccountAsync(IAccount account)
+            => ValidateAccountAsync(account, CancellationToken.None);
+
         public static Task<bool> ValidateAccountAsync(IAccount account, CancellationToken token)
             => ValidateAccountAsync(account, DefaultEndpoint, token);
 
@@ -51,6 +54,9 @@ namespace Ess3.Library.S3
 
             return isValidated;
         }
+
+        public static Task<Int64> GetBucketSizeAsync(IAccount account, string bucketName)
+            => GetBucketSizeAsync(account, bucketName, CancellationToken.None);
 
         public static Task<Int64> GetBucketSizeAsync(IAccount account, string bucketName, CancellationToken token)
             => GetBucketSizeAsync(account, bucketName, DefaultEndpoint, token);

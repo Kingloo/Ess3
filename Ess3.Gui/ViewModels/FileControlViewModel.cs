@@ -14,5 +14,10 @@ namespace Ess3.Gui.ViewModels
         }
 
         public FileControlViewModel() { }
+
+        public FileControlViewModel(IAccount account)
+        {
+            Account = account;
+        }
     }
 }

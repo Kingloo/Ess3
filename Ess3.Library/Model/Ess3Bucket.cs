@@ -21,10 +21,8 @@ namespace Ess3.Library.Model
         public IReadOnlyCollection<Ess3File> Files => _files;
 
         public Ess3Bucket(S3Bucket bucket)
-        {
-            BucketName = bucket.BucketName;
-            CreationDate = bucket.CreationDate;
-        }
+            : this(bucket.BucketName, bucket.CreationDate)
+        { }
 
         public Ess3Bucket(string bucketName)
             : this(bucketName, DateTime.Now)
@@ -60,6 +58,8 @@ namespace Ess3.Library.Model
         public void ClearDirectories()
         {
             _directories.Clear();
+
+            RaisePropertyChanged(nameof(Size));
         }
 
         public void AddFile(Ess3File file)
@@ -67,6 +67,8 @@ namespace Ess3.Library.Model
             if (!_files.Contains(file))
             {
                 _files.Add(file);
+
+                RaisePropertyChanged(nameof(Size));
             }
         }
 
@@ -75,12 +77,16 @@ namespace Ess3.Library.Model
             if (_files.Contains(file))
             {
                 _files.Remove(file);
+
+                RaisePropertyChanged(nameof(Size));
             }
         }
 
         public void ClearFiles()
         {
             _files.Clear();
+
+            RaisePropertyChanged(nameof(Size));
         }
 
         public void ClearAll()

@@ -129,7 +129,7 @@ namespace Ess3.Gui.ViewModels
 
                 if (addAccountWindowViewModel.Account is null)
                 {
-                    throw new Exception("validating account failed");
+                    throw new Exception($"{nameof(addAccountWindow)} DialogResult was true but the account was null");
                 }
 
                 AddAccount(addAccountWindowViewModel.Account);

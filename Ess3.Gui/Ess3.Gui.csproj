@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Bucket.png" />
     <None Remove="Views\AccountControl.xaml" />
     <None Remove="Views\AddAccountWindow.xaml" />
     <None Remove="Views\FileControl.xaml" />
@@ -27,6 +28,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ess3.Library\Ess3.Library.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Bucket.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
