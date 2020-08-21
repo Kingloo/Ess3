@@ -86,7 +86,7 @@ namespace Ess3.Gui.ViewModels
 
         public AccountControlViewModel()
         {
-            //AddFakeAccounts();
+            AddFakeAccounts();
         }
 
         public async Task UpdateAccountAsync(IAccount account)
@@ -105,7 +105,12 @@ namespace Ess3.Gui.ViewModels
 
             Ess3Bucket[] buckets = await List.BucketsAsync(account, RegionEndpoint.EUWest1);
 
-            //account.add
+            foreach (Ess3Bucket each in buckets)
+            {
+                account.AddBucket(each);
+
+                await Helpers.UpdateBucketAsync(account, each);
+            }
         }
 
         private void OpenAddAccountWindow()

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Amazon;
 using Amazon.Runtime;
 using Ess3.Library.Model;
 
@@ -15,6 +14,8 @@ namespace Ess3.Library.Interfaces
         bool IsValidated { get; set; }
         IReadOnlyCollection<Ess3Bucket> Buckets { get; }
 
+        public void AddBucket(Ess3Bucket bucket);
+        public void RemoveBucket(Ess3Bucket bucket);
         AWSCredentials GetCredentials();
     }
 }

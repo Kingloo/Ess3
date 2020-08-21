@@ -60,6 +60,22 @@ namespace Ess3.Library
 
         public Account() { }
 
+        public void AddBucket(Ess3Bucket bucket)
+        {
+            if (!_buckets.Contains(bucket))
+            {
+                _buckets.Add(bucket);
+            }
+        }
+
+        public void RemoveBucket(Ess3Bucket bucket)
+        {
+            if (_buckets.Contains(bucket))
+            {
+                _buckets.Remove(bucket);
+            }
+        }
+
         public AWSCredentials GetCredentials() => new BasicAWSCredentials(AWSAccessKey, AWSSecretKey);
 
         public void AddFakeBuckets()

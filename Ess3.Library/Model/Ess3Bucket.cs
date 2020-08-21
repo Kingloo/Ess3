@@ -11,7 +11,7 @@ namespace Ess3.Library.Model
     public class Ess3Bucket : BindableBase
     {
         public string BucketName { get; } = string.Empty;
-        public DateTime CreationDate { get; } = DateTime.Now;
+        public DateTime CreationDate { get; } = DateTime.MinValue;
         public RegionEndpoint RegionEndpoint { get; set; } = RegionEndpoint.EUWest1;
 
         public Int64 Size => _directories.Sum(d => d.Size) + _files.Sum(f => f.Size);
@@ -39,6 +39,21 @@ namespace Ess3.Library.Model
 
             BucketName = bucketName;
             CreationDate = creationDate;
+        }
+
+        public void Add(Ess3Object ess3Object)
+        {
+            switch (ess3Object)
+            {
+                case Ess3File file:
+                    AddFile(file);
+                    break;
+                case Ess3Directory directory:
+                    AddDirectory(directory);
+                    break;
+                default:
+                    break;
+            }
         }
 
         public void AddDirectory(Ess3Directory directory)

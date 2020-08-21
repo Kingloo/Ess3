@@ -17,10 +17,14 @@ namespace Ess3.Library.S3
             => s3Object.Size == 0L
             && s3Object.Key.EndsWith("/", StringComparison.OrdinalIgnoreCase);
 
-        //private static Ess3Directory CreateDirectory(S3Object s3Object)
-        //    => new Ess3Directory(s3Object);
+        internal static bool IsBucketLevel(S3Object s3Object)
+        {
+            return true;
+        }
 
-        //private static Ess3File CreateFile(S3Object s3Object)
-        //    => new Ess3File(s3Object);
+        internal static bool IsBucketLevel(Ess3Object ess3Object)
+        {
+            return true;
+        }
     }
 }

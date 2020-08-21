@@ -33,8 +33,7 @@
                               AccountChanged="AccountControl_AccountChanged" />
 
         <local:FileControl Grid.Row="1"
-                           x:Name="fileControl"
-                           Background="LightBlue" />
+                           x:Name="fileControl" />
 
         <local:OperationsControl Grid.Row="2" Background="LightGreen">
             <local:OperationsControl.Style>

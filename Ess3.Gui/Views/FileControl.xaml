@@ -45,11 +45,17 @@
                     </Grid.RowDefinitions>
                     
                     <StackPanel Grid.Row="0"
+                                HorizontalAlignment="Right"
                                 Orientation="Horizontal">
+                        <StackPanel.Resources>
+                            <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
+                                <Setter Property="Margin" Value="5,0,5,0" />
+                            </Style>
+                        </StackPanel.Resources>
                         <Label Content="{Binding CreationDate}" />
                         <Label Content="{Binding Size, Converter={StaticResource bytesToHumanReadableConverter}}" />
-                        <Label Content="{Binding Directories.Count}" ContentStringFormat="" />
-                        <Label Content="{Binding Files.Count}" ContentStringFormat="" />
+                        <Label Content="{Binding Directories.Count}" ContentStringFormat="{}{0} directories" />
+                        <Label Content="{Binding Files.Count}" ContentStringFormat="{}{0} files" />
                     </StackPanel>
                     
                     <!--<TreeView Grid.Row="1"
@@ -58,39 +64,4 @@
             </DataTemplate>
         </TabControl.ContentTemplate>
     </TabControl>
-
-    <!--<Grid>
-        <Grid.Resources>
-            <CollectionViewSource x:Key="sortedBuckets"
-                                  Source="{Binding Account.Buckets}"
-                                  IsLiveSortingRequested="True">
-                <CollectionViewSource.SortDescriptions>
-                    <scm:SortDescription PropertyName="BucketName" Direction="Ascending" />
-                </CollectionViewSource.SortDescriptions>
-            </CollectionViewSource>
-        </Grid.Resources>
-        
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-
-        <ListBox Grid.Row="0"
-                 ItemsSource="{Binding Source={StaticResource sortedBuckets}}">
-            <ListBox.Style>
-                <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
-                    
-                </Style>
-            </ListBox.Style>
-            <ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type ess3Model:Ess3Bucket}">
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="{Binding BucketName}" />
-                        <Label Content="{Binding Size}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-    </Grid>-->
-    
 </UserControl>

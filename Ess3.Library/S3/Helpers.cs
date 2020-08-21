@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.Runtime.Internal;
+using Amazon.Runtime.Internal.Auth;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Ess3.Library.Interfaces;
@@ -34,7 +36,9 @@ namespace Ess3.Library.S3
             {
                 try
                 {
-                    var response = await RunWithoutCatchAsync<ListBucketsRequest, ListBucketsResponse>(client.ListBucketsAsync, new ListBucketsRequest(), token).ConfigureAwait(false);
+                    ListBucketsRequest request = new ListBucketsRequest();
+
+                    var response = await RunWithoutCatchAsync<ListBucketsRequest, ListBucketsResponse>(client.ListBucketsAsync, request, token).ConfigureAwait(false);
 
                     isValidated = true;
 
@@ -51,56 +55,60 @@ namespace Ess3.Library.S3
             return isValidated;
         }
 
-        public static Task<Int64> GetBucketSizeAsync(IAccount account, Ess3Bucket bucket)
-            => GetBucketSizeAsync(account, bucket, CancellationToken.None);
+        public static Task UpdateBucketAsync(IAccount account, Ess3Bucket bucket)
+            => UpdateBucketAsync(account, bucket, CancellationToken.None);
 
-        /// <summary>
-        /// Gets the total size of the objects in a bucket.
-        /// </summary>
-        /// <param name="account">The AWS account to query.</param>
-        /// <param name="bucketName">The bucket for which to calculate total size.</param>
-        /// <returns>-1 means an AmazonS3Exception was thrown.</returns>
-        public static async Task<Int64> GetBucketSizeAsync(IAccount account, Ess3Bucket bucket, CancellationToken token)
+        public static async Task UpdateBucketAsync(IAccount account, Ess3Bucket bucket, CancellationToken token)
         {
-            if (account is null) { throw new ArgumentNullException(nameof(account)); }
+            ListObjectsV2Response? response = await List.ObjectsAsync(account, bucket, token).ConfigureAwait(false);
 
-            using IAmazonS3 client = new AmazonS3Client(account.GetCredentials(), bucket.RegionEndpoint);
+            if (response is null) { return; }
+            if (response.HttpStatusCode != HttpStatusCode.OK) { return; }
 
-            var request = new ListObjectsV2Request
+            var ess3Objects = response.S3Objects.Select(o => Ess3Factory.Create(o)).ToList();
+
+            var files = ess3Objects.Where(o => o is Ess3File).Cast<Ess3File>();
+            var directories = ess3Objects.Where(o => o is Ess3Directory).Cast<Ess3Directory>();
+
+            PutEveryDirectoryIntoParentDirectory(directories);
+            PutEveryFileIntoParentDirectory(files, directories);
+
+            foreach (Ess3Object each in ess3Objects.Where(o => Ess3Factory.IsBucketLevel(o)))
             {
-                BucketName = bucket.BucketName
-            };
-
-            ListObjectsV2Response? response = await RunWithCatchAsync<ListObjectsV2Request, ListObjectsV2Response>(client.ListObjectsV2Async, request, token).ConfigureAwait(false);
-
-            return response?.S3Objects.Sum(o => o.Size) ?? -1L;
+                bucket.Add(each);
+            }
         }
 
-        public static Task<string[]> GetBucketKeysAsync(IAccount account, Ess3Bucket bucket)
-            => GetBucketKeysAsync(account, bucket, CancellationToken.None);
-
-        /// <summary>
-        /// Gets an array of all the keys in an S3 bucket.
-        /// </summary>
-        /// <param name="account">Account that owns the bucket.</param>
-        /// <param name="bucketName">Bucket name for which to get the keys.</param>
-        /// <param name="regionEndpoint">Endpoint the bucket resides in.</param>
-        /// <param name="token">A cancellation token.</param>
-        /// <returns>An array of all the S3 object keys, or an empty array if the call failed.</returns>
-        public static async Task<string[]> GetBucketKeysAsync(IAccount account, Ess3Bucket bucket, CancellationToken token)
+        private static void PutEveryDirectoryIntoParentDirectory(IEnumerable<Ess3Directory> directories)
         {
-            if (account is null) { throw new ArgumentNullException(nameof(account)); }
-
-            using IAmazonS3 client = new AmazonS3Client(account.GetCredentials(), bucket.RegionEndpoint);
-
-            var request = new ListObjectsV2Request
+            foreach (Ess3Directory each in directories)
             {
-                BucketName = bucket.BucketName
-            };
+                var subdirectories = directories.Where(d => d.Key.StartsWith(each.Key, StringComparison.OrdinalIgnoreCase));
 
-            ListObjectsV2Response? response = await RunWithCatchAsync<ListObjectsV2Request, ListObjectsV2Response>(client.ListObjectsV2Async, request, token).ConfigureAwait(false);
+                foreach (Ess3Directory subdirectory in subdirectories)
+                {
+                    if (!each.Directories.Contains(subdirectory))
+                    {
+                        each.AddDirectory(subdirectory);
+                    }
+                }
+            }
+        }
 
-            return response?.S3Objects.Select(o => o.Key).ToArray() ?? Array.Empty<string>();
+        private static void PutEveryFileIntoParentDirectory(IEnumerable<Ess3File> files, IEnumerable<Ess3Directory> directories)
+        {
+            foreach (Ess3Directory each in directories)
+            {
+                var subfiles = files.Where(f => f.Key.StartsWith(each.Key, StringComparison.OrdinalIgnoreCase));
+
+                foreach (Ess3File file in subfiles)
+                {
+                    if (!each.Files.Contains(file))
+                    {
+                        each.AddFile(file);
+                    }
+                }
+            }
         }
 
         internal static async Task<TResponse> RunWithoutCatchAsync<TRequest, TResponse>(
