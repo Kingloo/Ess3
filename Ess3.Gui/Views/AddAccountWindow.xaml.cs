@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows;
+using Amazon;
 using Ess3.Gui.Interfaces;
 using Ess3.Gui.ViewModels;
 
@@ -29,7 +30,7 @@ namespace Ess3.Gui.Views
 
             validateButton.IsEnabled = false;
 
-            bool isValid = await viewModel.ValidateAsync(awsAccessKey, awsSecretKey);
+            bool isValid = await viewModel.ValidateAsync(awsAccessKey, awsSecretKey, RegionEndpoint.EUWest1);
 
             validateButton.IsEnabled = true;
 

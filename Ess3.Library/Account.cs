@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using Amazon.Runtime;
 using Ess3.Library.Common;
 using Ess3.Library.Interfaces;
@@ -63,60 +62,11 @@ namespace Ess3.Library
 
         public AWSCredentials GetCredentials() => new BasicAWSCredentials(AWSAccessKey, AWSSecretKey);
 
-        public void AddFile(Ess3File file)
-        {
-            _buckets.First().AddFile(file);
-        }
-
-        public void RemoveFile(Ess3File file)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddDirectory(Ess3Directory directory)
-        {
-            _buckets.First().AddDirectory(directory);
-        }
-
-        public void RemoveDirectory(Ess3Directory directory)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ClearFiles()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ClearDirectories()
-        {
-            throw new NotImplementedException();
-        }
-
         public void AddFakeBuckets()
         {
             _buckets.Add(new Ess3Bucket(DisplayName + "'s first bucket", DateTime.Now));
             _buckets.Add(new Ess3Bucket(DisplayName + "'s second bucket", DateTime.Now));
             _buckets.Add(new Ess3Bucket(DisplayName + "'s third bucket", DateTime.Now));
-        }
-
-        public void AddFakeFiles()
-        {
-            AddFile(
-                new Ess3File
-                {
-                    BucketName = _buckets.First().BucketName,
-                    Key = $"{DisplayName}'s first file",
-                    Size = DisplayName.Length + 6
-                });
-
-            AddFile(
-                new Ess3File
-                {
-                    BucketName = _buckets.First().BucketName,
-                    Key = $"{DisplayName}'s second file",
-                    Size = DisplayName.Length
-                });
         }
 
         public bool Equals(IAccount other)

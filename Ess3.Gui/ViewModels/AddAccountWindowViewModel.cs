@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Amazon;
 using Ess3.Gui.Common;
 using Ess3.Gui.Interfaces;
 using Ess3.Library;
@@ -13,7 +14,7 @@ namespace Ess3.Gui.ViewModels
 
         public AddAccountWindowViewModel() { }
 
-        public Task<bool> ValidateAsync(string awsAccessKey, string awsSecretKey)
+        public Task<bool> ValidateAsync(string awsAccessKey, string awsSecretKey, RegionEndpoint regionEndpoint)
         {
             Account = new Account
             {
@@ -21,7 +22,7 @@ namespace Ess3.Gui.ViewModels
                 AWSSecretKey = awsSecretKey
             };
 
-            return S3Helpers.ValidateAccountAsync(Account);
+            return Helpers.ValidateAccountAsync(Account, regionEndpoint);
         }
     }
 }

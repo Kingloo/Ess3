@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Amazon;
 using Amazon.S3.Model;
 using Ess3.Library.Common;
 
@@ -11,6 +12,7 @@ namespace Ess3.Library.Model
     {
         public string BucketName { get; } = string.Empty;
         public DateTime CreationDate { get; } = DateTime.Now;
+        public RegionEndpoint RegionEndpoint { get; set; } = RegionEndpoint.EUWest1;
 
         public Int64 Size => _directories.Sum(d => d.Size) + _files.Sum(f => f.Size);
 

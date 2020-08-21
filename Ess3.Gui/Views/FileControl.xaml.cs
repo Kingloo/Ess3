@@ -1,6 +1,7 @@
 ﻿using System.Windows.Controls;
 using Ess3.Gui.Interfaces;
 using Ess3.Gui.ViewModels;
+using Ess3.Library.Model;
 
 namespace Ess3.Gui.Views
 {
@@ -19,6 +20,14 @@ namespace Ess3.Gui.Views
             this.viewModel = viewModel;
 
             DataContext = this.viewModel;
+        }
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count == 1)
+            {
+                viewModel.SelectedBucket = e.AddedItems[0] as Ess3Bucket;
+            }
         }
     }
 }

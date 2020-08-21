@@ -9,18 +9,14 @@ using Amazon.Runtime.Internal;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Ess3.Library.Interfaces;
+using Ess3.Library.Model;
 
 namespace Ess3.Library.S3
 {
-    public static class S3Helpers
+    public static class Helpers
     {
-        public static RegionEndpoint DefaultEndpoint { get; set; } = RegionEndpoint.EUWest1;
-
-        public static Task<bool> ValidateAccountAsync(IAccount account)
-            => ValidateAccountAsync(account, CancellationToken.None);
-
-        public static Task<bool> ValidateAccountAsync(IAccount account, CancellationToken token)
-            => ValidateAccountAsync(account, DefaultEndpoint, token);
+        public static Task<bool> ValidateAccountAsync(IAccount account, RegionEndpoint regionEndpoint)
+            => ValidateAccountAsync(account, regionEndpoint, CancellationToken.None);
 
         /// <summary>
         /// Validates whether an account's keys are valid credentials.
@@ -55,11 +51,8 @@ namespace Ess3.Library.S3
             return isValidated;
         }
 
-        public static Task<Int64> GetBucketSizeAsync(IAccount account, string bucketName)
-            => GetBucketSizeAsync(account, bucketName, CancellationToken.None);
-
-        public static Task<Int64> GetBucketSizeAsync(IAccount account, string bucketName, CancellationToken token)
-            => GetBucketSizeAsync(account, bucketName, DefaultEndpoint, token);
+        public static Task<Int64> GetBucketSizeAsync(IAccount account, Ess3Bucket bucket)
+            => GetBucketSizeAsync(account, bucket, CancellationToken.None);
 
         /// <summary>
         /// Gets the total size of the objects in a bucket.
@@ -67,22 +60,24 @@ namespace Ess3.Library.S3
         /// <param name="account">The AWS account to query.</param>
         /// <param name="bucketName">The bucket for which to calculate total size.</param>
         /// <returns>-1 means an AmazonS3Exception was thrown.</returns>
-        public static async Task<Int64> GetBucketSizeAsync(IAccount account, string bucketName, RegionEndpoint regionEndpoint, CancellationToken token)
+        public static async Task<Int64> GetBucketSizeAsync(IAccount account, Ess3Bucket bucket, CancellationToken token)
         {
             if (account is null) { throw new ArgumentNullException(nameof(account)); }
-            if (String.IsNullOrWhiteSpace(bucketName)) { throw new ArgumentNullException(nameof(bucketName)); }
 
-            using IAmazonS3 client = new AmazonS3Client(account.GetCredentials(), regionEndpoint);
+            using IAmazonS3 client = new AmazonS3Client(account.GetCredentials(), bucket.RegionEndpoint);
 
-            var request = new ListObjectsV2Request { BucketName = bucketName };
+            var request = new ListObjectsV2Request
+            {
+                BucketName = bucket.BucketName
+            };
 
             ListObjectsV2Response? response = await RunWithCatchAsync<ListObjectsV2Request, ListObjectsV2Response>(client.ListObjectsV2Async, request, token).ConfigureAwait(false);
 
             return response?.S3Objects.Sum(o => o.Size) ?? -1L;
         }
 
-        public static Task<string[]> GetBucketKeysAsync(IAccount account, string bucketName, CancellationToken token)
-            => GetBucketKeysAsync(account, bucketName, DefaultEndpoint, token);
+        public static Task<string[]> GetBucketKeysAsync(IAccount account, Ess3Bucket bucket)
+            => GetBucketKeysAsync(account, bucket, CancellationToken.None);
 
         /// <summary>
         /// Gets an array of all the keys in an S3 bucket.
@@ -92,21 +87,23 @@ namespace Ess3.Library.S3
         /// <param name="regionEndpoint">Endpoint the bucket resides in.</param>
         /// <param name="token">A cancellation token.</param>
         /// <returns>An array of all the S3 object keys, or an empty array if the call failed.</returns>
-        public static async Task<string[]> GetBucketKeysAsync(IAccount account, string bucketName, RegionEndpoint regionEndpoint, CancellationToken token)
+        public static async Task<string[]> GetBucketKeysAsync(IAccount account, Ess3Bucket bucket, CancellationToken token)
         {
             if (account is null) { throw new ArgumentNullException(nameof(account)); }
-            if (String.IsNullOrWhiteSpace(bucketName)) { throw new ArgumentNullException(nameof(bucketName)); }
 
-            using IAmazonS3 client = new AmazonS3Client(account.GetCredentials(), regionEndpoint);
+            using IAmazonS3 client = new AmazonS3Client(account.GetCredentials(), bucket.RegionEndpoint);
 
-            var request = new ListObjectsV2Request { BucketName = bucketName };
+            var request = new ListObjectsV2Request
+            {
+                BucketName = bucket.BucketName
+            };
 
             ListObjectsV2Response? response = await RunWithCatchAsync<ListObjectsV2Request, ListObjectsV2Response>(client.ListObjectsV2Async, request, token).ConfigureAwait(false);
 
             return response?.S3Objects.Select(o => o.Key).ToArray() ?? Array.Empty<string>();
         }
 
-        private static async Task<TResponse> RunWithoutCatchAsync<TRequest, TResponse>(
+        internal static async Task<TResponse> RunWithoutCatchAsync<TRequest, TResponse>(
             Func<TRequest, CancellationToken, Task<TResponse>> s3Call,
             TRequest request,
             CancellationToken token)
@@ -116,7 +113,7 @@ namespace Ess3.Library.S3
             return await s3Call.Invoke(request, token).ConfigureAwait(false);
         }
 
-        private static async Task<TResponse?> RunWithCatchAsync<TRequest, TResponse>(
+        internal static async Task<TResponse?> RunWithCatchAsync<TRequest, TResponse>(
             Func<TRequest, CancellationToken, Task<TResponse>> s3Call,
             TRequest request,
             CancellationToken token)
@@ -133,7 +130,7 @@ namespace Ess3.Library.S3
             }
         }
 
-        private static async Task<TResponse?> RunWithCatchAndLogAsync<TRequest, TResponse>(
+        internal static async Task<TResponse?> RunWithCatchAndLogAsync<TRequest, TResponse>(
             Func<TRequest, CancellationToken, Task<TResponse>> s3Call,
             TRequest request,
             Func<Exception, Task> logWriter,

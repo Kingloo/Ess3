@@ -17,7 +17,8 @@
         <converters:BytesToHumanReadableConverter x:Key="bytesToHumanReadableConverter" />
     </UserControl.Resources>
     
-    <TabControl ItemsSource="{Binding Source={StaticResource sortedBuckets}}">
+    <TabControl ItemsSource="{Binding Source={StaticResource sortedBuckets}}"
+                SelectionChanged="TabControl_SelectionChanged">
         <TabControl.ItemTemplate>
             <DataTemplate DataType="{x:Type ess3Model:Ess3Bucket}">
                 <StackPanel Orientation="Horizontal"

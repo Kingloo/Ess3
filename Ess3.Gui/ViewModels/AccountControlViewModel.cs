@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Amazon;
 using Ess3.Gui.Common;
 using Ess3.Gui.Interfaces;
 using Ess3.Gui.Views;
 using Ess3.Library;
 using Ess3.Library.Interfaces;
+using Ess3.Library.Model;
 using Ess3.Library.S3;
 
 namespace Ess3.Gui.ViewModels
@@ -84,7 +86,7 @@ namespace Ess3.Gui.ViewModels
 
         public AccountControlViewModel()
         {
-            AddFakeAccounts();
+            //AddFakeAccounts();
         }
 
         public async Task UpdateAccountAsync(IAccount account)
@@ -101,20 +103,9 @@ namespace Ess3.Gui.ViewModels
                 return;
             }
 
-            Int64 bucketSize = await S3Helpers.GetBucketSizeAsync(account, "kingloobackup");
+            Ess3Bucket[] buckets = await List.BucketsAsync(account, RegionEndpoint.EUWest1);
 
-            switch (bucketSize)
-            {
-                case -1L:
-                    Debug.WriteLine("bucket name was null or empty");
-                    break;
-                case -2L:
-                    Debug.WriteLine("bucket does not exist");
-                    break;
-                default:
-                    Debug.WriteLine($"bucket size: {bucketSize}");
-                    break;
-            }
+            //account.add
         }
 
         private void OpenAddAccountWindow()
@@ -165,7 +156,6 @@ namespace Ess3.Gui.ViewModels
                 AWSAccessKey = "fredjonessaccesskey"
             };
             fred.AddFakeBuckets();
-            fred.AddFakeFiles();
 
             var claudia = new Account
             {
@@ -173,7 +163,6 @@ namespace Ess3.Gui.ViewModels
                 AWSAccessKey = "claudiablackssecretkey"
             };
             claudia.AddFakeBuckets();
-            claudia.AddFakeFiles();
 
             AddAccount(fred);
             AddAccount(claudia);

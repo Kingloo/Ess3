@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Amazon;
 using Amazon.Runtime;
 using Ess3.Library.Model;
 
@@ -15,14 +16,5 @@ namespace Ess3.Library.Interfaces
         IReadOnlyCollection<Ess3Bucket> Buckets { get; }
 
         AWSCredentials GetCredentials();
-
-        public void AddFile(Ess3File file);
-        public void RemoveFile(Ess3File file);
-
-        public void AddDirectory(Ess3Directory directory);
-        public void RemoveDirectory(Ess3Directory directory);
-
-        public void ClearFiles();
-        public void ClearDirectories();
     }
 }
