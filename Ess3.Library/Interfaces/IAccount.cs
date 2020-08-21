@@ -17,5 +17,7 @@ namespace Ess3.Library.Interfaces
         public void AddBucket(Ess3Bucket bucket);
         public void RemoveBucket(Ess3Bucket bucket);
         AWSCredentials GetCredentials();
+
+        void Clear();
     }
 }

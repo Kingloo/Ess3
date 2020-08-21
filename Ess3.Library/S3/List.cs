@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon;
@@ -26,6 +27,11 @@ namespace Ess3.Library.S3
                 .ConfigureAwait(false);
 
             if (response is null)
+            {
+                return Array.Empty<Ess3Bucket>();
+            }
+
+            if (response.HttpStatusCode != HttpStatusCode.OK)
             {
                 return Array.Empty<Ess3Bucket>();
             }

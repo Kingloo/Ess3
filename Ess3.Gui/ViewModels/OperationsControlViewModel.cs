@@ -14,16 +14,16 @@ namespace Ess3.Gui.ViewModels
 
         public OperationsControlViewModel()
         {
-            AddFakeData();
+            //AddFakeData();
         }
 
-        private void AddFakeData()
-        {
-            _operations.Add(new Operation { OperationType = OperationType.Upload });
-            _operations.Add(new Operation { OperationType = OperationType.Download });
-            _operations.Add(new Operation { OperationType = OperationType.SetStorageClass });
-            _operations.Add(new Operation { OperationType = OperationType.Delete });
-        }
+        //private void AddFakeData()
+        //{
+        //    _operations.Add(new Operation { OperationType = OperationType.Upload });
+        //    _operations.Add(new Operation { OperationType = OperationType.Download });
+        //    _operations.Add(new Operation { OperationType = OperationType.SetStorageClass });
+        //    _operations.Add(new Operation { OperationType = OperationType.Delete });
+        //}
 
         public void Add(IOperation operation)
         {

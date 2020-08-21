@@ -10,6 +10,20 @@ namespace Ess3.Gui.ViewModels
 {
     public class FileControlViewModel : BindableBase, IFileControlViewModel
     {
+        private DelegateCommandAsync<Ess3Bucket>? _updateBucketCommand = null;
+        public DelegateCommandAsync<Ess3Bucket> UpdateBucketCommand
+        {
+            get
+            {
+                if (_updateBucketCommand is null)
+                {
+                    _updateBucketCommand = new DelegateCommandAsync<Ess3Bucket>(UpdateBucketAsync, CanExecute);
+                }
+
+                return _updateBucketCommand;
+            }
+        }
+
         private DelegateCommandAsync<Ess3Directory>? _deleteDirectoryCommand = null;
         public DelegateCommandAsync<Ess3Directory> DeleteDirectoryCommand
         {
@@ -43,6 +57,16 @@ namespace Ess3.Gui.ViewModels
         public FileControlViewModel(IAccount account)
         {
             Account = account;
+        }
+
+        public async Task UpdateBucketAsync(Ess3Bucket bucket)
+        {
+            if (!(Account is null))
+            {
+                bucket.ClearAll();
+
+                await Helpers.UpdateBucketAsync(Account, bucket);
+            }
         }
 
         public async Task DeleteDirectoryAsync(Ess3Directory directory)

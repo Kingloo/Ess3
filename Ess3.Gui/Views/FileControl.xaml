@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="Ess3.Gui.Views.FileControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:views="clr-namespace:Ess3.Gui.Views"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:converters="clr-namespace:Ess3.Gui.Converters"
              xmlns:ess3Model="clr-namespace:Ess3.Library.Model;assembly=Ess3.Library">
@@ -22,7 +23,16 @@
         <TabControl.ItemTemplate>
             <DataTemplate DataType="{x:Type ess3Model:Ess3Bucket}">
                 <StackPanel Orientation="Horizontal"
+                            Tag="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type views:FileControl}}}"
                             Height="50">
+                    <StackPanel.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Update"
+                                      Command="{Binding Path=PlacementTarget.Tag.UpdateBucketCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                      CommandParameter="{Binding}" />
+                        </ContextMenu>
+                    </StackPanel.ContextMenu>
+                    
                     <Image Source="/Assets/Bucket.png"
                            Height="25"
                            Width="25"

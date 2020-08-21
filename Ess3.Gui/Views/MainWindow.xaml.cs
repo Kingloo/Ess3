@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Markup;
 using Ess3.Gui.Interfaces;
@@ -28,8 +27,6 @@ namespace Ess3.Gui.Views
 
         private void AccountControl_AccountChanged(object sender, AccountChangedEventArgs e)
         {
-            Debug.WriteLine(e.Account.DisplayName);
-
             ((IFileControlViewModel)fileControl.DataContext).Account = e.Account;
         }
 

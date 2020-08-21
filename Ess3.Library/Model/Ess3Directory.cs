@@ -6,10 +6,10 @@ namespace Ess3.Library.Model
 {
     public class Ess3Directory : Ess3Object
     {
-        private ObservableCollection<Ess3Directory> _directories = new ObservableCollection<Ess3Directory>();
+        private readonly ObservableCollection<Ess3Directory> _directories = new ObservableCollection<Ess3Directory>();
         public IReadOnlyCollection<Ess3Directory> Directories => _directories;
 
-        private ObservableCollection<Ess3File> _files = new ObservableCollection<Ess3File>();
+        private readonly ObservableCollection<Ess3File> _files = new ObservableCollection<Ess3File>();
         public IReadOnlyCollection<Ess3File> Files => _files;
 
         public Ess3Directory(S3Object s3Object)

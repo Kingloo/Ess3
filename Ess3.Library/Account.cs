@@ -78,6 +78,16 @@ namespace Ess3.Library
 
         public AWSCredentials GetCredentials() => new BasicAWSCredentials(AWSAccessKey, AWSSecretKey);
 
+        public void Clear()
+        {
+            foreach (Ess3Bucket each in _buckets)
+            {
+                each.ClearAll();
+            }
+
+            _buckets.Clear();
+        }
+
         public void AddFakeBuckets()
         {
             _buckets.Add(new Ess3Bucket(DisplayName + "'s first bucket", DateTime.Now));

@@ -61,20 +61,6 @@ namespace Ess3.Gui.ViewModels
             }
         }
 
-        private DelegateCommand<IAccount?>? _setSelectedAccountCommand = null;
-        public DelegateCommand<IAccount?> SetSelectedAccountCommand
-        {
-            get
-            {
-                if (_setSelectedAccountCommand is null)
-                {
-                    _setSelectedAccountCommand = new DelegateCommand<IAccount?>(SetSelectedAccount, (_) => true);
-                }
-
-                return _setSelectedAccountCommand;
-            }
-        }
-
         private bool CanExecute(object _) => true;
 
         private IAccount? _selectedAccount = null;
@@ -102,6 +88,8 @@ namespace Ess3.Gui.ViewModels
                 Debug.WriteLine($"account has not been validated (displayName: {account.DisplayName}, accessKey: {account.AWSAccessKey})");
                 return;
             }
+
+            account.Clear();
 
             Ess3Bucket[] buckets = await List.BucketsAsync(account, RegionEndpoint.EUWest1);
 
@@ -148,24 +136,21 @@ namespace Ess3.Gui.ViewModels
             }
         }
 
-        public void SetSelectedAccount(IAccount? account)
-        {
-            SelectedAccount = account;
-        }
-
         private void AddFakeAccounts()
         {
             var fred = new Account
             {
                 DisplayName = "fred.jones",
-                AWSAccessKey = "fredjonessaccesskey"
+                AWSAccessKey = "fredjonessaccesskey",
+                AWSSecretKey = "secret"
             };
             fred.AddFakeBuckets();
 
             var claudia = new Account
             {
                 DisplayName = "claudia.black",
-                AWSAccessKey = "claudiablackssecretkey"
+                AWSAccessKey = "claudiablackssecretkey",
+                AWSSecretKey = "secret"
             };
             claudia.AddFakeBuckets();
 
