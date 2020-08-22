@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using Amazon.S3.Model;
 using Ess3.Library.Model;
 
 namespace Ess3.Library.S3
 {
-    internal static class Ess3Factory
+    public static class Ess3Factory
     {
-        internal static Ess3Object Create(S3Object s3Object)
+        public static Ess3Object Create(S3Object s3Object)
             => IsDirectory(s3Object) switch
             {
                 true => new Ess3Directory(s3Object),
@@ -17,14 +18,13 @@ namespace Ess3.Library.S3
             => s3Object.Size == 0L
             && s3Object.Key.EndsWith("/", StringComparison.OrdinalIgnoreCase);
 
-        internal static bool IsBucketLevel(S3Object s3Object)
+        public static bool IsBucketLevel(Ess3Object ess3Object)
         {
-            return true;
-        }
+            bool isAtBucketLevel = String.IsNullOrEmpty(ess3Object.Prefix);
 
-        internal static bool IsBucketLevel(Ess3Object ess3Object)
-        {
-            return true;
+            Debug.WriteLine($"{ess3Object.Key} - bucket?: {isAtBucketLevel}");
+
+            return isAtBucketLevel;
         }
     }
 }

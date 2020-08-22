@@ -63,7 +63,7 @@ namespace Ess3.Gui.ViewModels
         {
             if (!(Account is null))
             {
-                bucket.ClearAll();
+                bucket.Clear();
 
                 await Helpers.UpdateBucketAsync(Account, bucket);
             }

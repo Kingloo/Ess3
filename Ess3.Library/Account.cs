@@ -80,11 +80,6 @@ namespace Ess3.Library
 
         public void Clear()
         {
-            foreach (Ess3Bucket each in _buckets)
-            {
-                each.ClearAll();
-            }
-
             _buckets.Clear();
         }
 

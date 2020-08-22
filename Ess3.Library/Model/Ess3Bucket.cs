@@ -14,13 +14,10 @@ namespace Ess3.Library.Model
         public DateTime CreationDate { get; } = DateTime.MinValue;
         public RegionEndpoint RegionEndpoint { get; set; } = RegionEndpoint.EUWest1;
 
-        public Int64 Size => _directories.Sum(d => d.Size) + _files.Sum(f => f.Size);
+        public Int64 Size => _ess3Objects.Sum(o => o.Size);
 
-        private readonly ObservableCollection<Ess3Directory> _directories = new ObservableCollection<Ess3Directory>();
-        public IReadOnlyCollection<Ess3Directory> Directories => _directories;
-
-        private readonly ObservableCollection<Ess3File> _files = new ObservableCollection<Ess3File>();
-        public IReadOnlyCollection<Ess3File> Files => _files;
+        private readonly ObservableCollection<Ess3Object> _ess3Objects = new ObservableCollection<Ess3Object>();
+        public IReadOnlyCollection<Ess3Object> Ess3Objects => _ess3Objects;
 
         public Ess3Bucket(S3Bucket bucket)
             : this(bucket.BucketName, bucket.CreationDate)
@@ -43,73 +40,12 @@ namespace Ess3.Library.Model
 
         public void Add(Ess3Object ess3Object)
         {
-            switch (ess3Object)
+            if (!_ess3Objects.Contains(ess3Object))
             {
-                case Ess3File file:
-                    AddFile(file);
-                    break;
-                case Ess3Directory directory:
-                    AddDirectory(directory);
-                    break;
-                default:
-                    break;
+                _ess3Objects.Add(ess3Object);
             }
         }
 
-        public void AddDirectory(Ess3Directory directory)
-        {
-            if (!_directories.Contains(directory))
-            {
-                _directories.Add(directory);
-            }
-        }
-
-        public void RemoveDirectory(Ess3Directory directory)
-        {
-            if (_directories.Contains(directory))
-            {
-                _directories.Remove(directory);
-            }
-        }
-
-        public void ClearDirectories()
-        {
-            _directories.Clear();
-
-            RaisePropertyChanged(nameof(Size));
-        }
-
-        public void AddFile(Ess3File file)
-        {
-            if (!_files.Contains(file))
-            {
-                _files.Add(file);
-
-                RaisePropertyChanged(nameof(Size));
-            }
-        }
-
-        public void RemoveFile(Ess3File file)
-        {
-            if (_files.Contains(file))
-            {
-                _files.Remove(file);
-
-                RaisePropertyChanged(nameof(Size));
-            }
-        }
-
-        public void ClearFiles()
-        {
-            _files.Clear();
-
-            RaisePropertyChanged(nameof(Size));
-        }
-
-        public void ClearAll()
-        {
-            ClearDirectories();
-            ClearFiles();
-        }
+        public void Clear() => _ess3Objects.Clear();
     }
 }

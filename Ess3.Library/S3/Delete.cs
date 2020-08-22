@@ -55,7 +55,9 @@ namespace Ess3.Library.S3
 
         private static bool BucketHasItems(Ess3Bucket bucket)
         {
-            return bucket.Directories.Count + bucket.Files.Count > 0;
+            //return bucket.Directories.Count + bucket.Files.Count > 0;
+
+            return bucket.Ess3Objects.Count > 0;
         }
 
         private static DeleteObjectsRequest CreateDirectoryDeletionRequest(Ess3Bucket bucket, Ess3Directory directory)
@@ -69,15 +71,20 @@ namespace Ess3.Library.S3
             request.AddKey(directory.Key);
 
             // delete every subdirectory key
-            foreach (Ess3Directory eachDirectory in bucket.Directories)
-            {
-                request.AddKey(eachDirectory.Key);
-            }
+            //foreach (Ess3Directory eachDirectory in bucket.Directories)
+            //{
+            //    request.AddKey(eachDirectory.Key);
+            //}
 
             // delete every file key on the directory
-            foreach (Ess3File eachFile in bucket.Files)
+            //foreach (Ess3File eachFile in bucket.Files)
+            //{
+            //    request.AddKey(eachFile.Key);
+            //}
+
+            foreach (Ess3Object each in bucket.Ess3Objects)
             {
-                request.AddKey(eachFile.Key);
+                request.AddKey(each.Key);
             }
 
             return request;

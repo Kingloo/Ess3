@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.Runtime.Internal;
-using Amazon.Runtime.Internal.Auth;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Ess3.Library.Interfaces;
@@ -73,7 +72,14 @@ namespace Ess3.Library.S3
             PutEveryDirectoryIntoParentDirectory(directories);
             PutEveryFileIntoParentDirectory(files, directories);
 
-            foreach (Ess3Object each in ess3Objects.Where(o => Ess3Factory.IsBucketLevel(o)))
+            // adding dirs then files in this way "sorts" the dirs first
+            // this means we don't need to sort in the GUI
+            foreach (Ess3Directory each in directories.Where(d => Ess3Factory.IsBucketLevel(d)))
+            {
+                bucket.Add(each);
+            }
+
+            foreach (Ess3File each in files.Where(f => Ess3Factory.IsBucketLevel(f)))
             {
                 bucket.Add(each);
             }
@@ -83,13 +89,18 @@ namespace Ess3.Library.S3
         {
             foreach (Ess3Directory each in directories)
             {
-                var subdirectories = directories.Where(d => d.Key.StartsWith(each.Key, StringComparison.OrdinalIgnoreCase));
+                var immediateSubdirectories = directories.Where(d => d.Prefix == each.Key);
 
-                foreach (Ess3Directory subdirectory in subdirectories)
+                foreach (Ess3Directory subdirectory in immediateSubdirectories)
                 {
-                    if (!each.Directories.Contains(subdirectory))
+                    //if (!each.Directories.Contains(subdirectory))
+                    //{
+                    //    each.AddDirectory(subdirectory);
+                    //}
+
+                    if (!each.Ess3Objects.Contains(subdirectory))
                     {
-                        each.AddDirectory(subdirectory);
+                        each.Add(subdirectory);
                     }
                 }
             }
@@ -99,13 +110,18 @@ namespace Ess3.Library.S3
         {
             foreach (Ess3Directory each in directories)
             {
-                var subfiles = files.Where(f => f.Key.StartsWith(each.Key, StringComparison.OrdinalIgnoreCase));
+                var immediateSubfiles = files.Where(f => f.Prefix == each.Key);
 
-                foreach (Ess3File file in subfiles)
+                foreach (Ess3File file in immediateSubfiles)
                 {
-                    if (!each.Files.Contains(file))
+                    //if (!each.Files.Contains(file))
+                    //{
+                    //    each.AddFile(file);
+                    //}
+
+                    if (!each.Ess3Objects.Contains(file))
                     {
-                        each.AddFile(file);
+                        each.Add(file);
                     }
                 }
             }

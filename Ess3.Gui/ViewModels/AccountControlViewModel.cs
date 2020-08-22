@@ -72,17 +72,11 @@ namespace Ess3.Gui.ViewModels
 
         public AccountControlViewModel()
         {
-            AddFakeAccounts();
+            //AddFakeAccounts();
         }
 
         public async Task UpdateAccountAsync(IAccount account)
         {
-            if (account is null)
-            {
-                Debug.WriteLine("account was null");
-                return;
-            }
-
             if (!account.IsValidated)
             {
                 Debug.WriteLine($"account has not been validated (displayName: {account.DisplayName}, accessKey: {account.AWSAccessKey})");
@@ -113,7 +107,7 @@ namespace Ess3.Gui.ViewModels
 
                 if (addAccountWindowViewModel.Account is null)
                 {
-                    throw new Exception($"{nameof(addAccountWindow)} DialogResult was true but the account was null");
+                    throw new Exception($"{nameof(addAccountWindow)}'s DialogResult was true but the account was null");
                 }
 
                 AddAccount(addAccountWindowViewModel.Account);
@@ -149,7 +143,7 @@ namespace Ess3.Gui.ViewModels
             var claudia = new Account
             {
                 DisplayName = "claudia.black",
-                AWSAccessKey = "claudiablackssecretkey",
+                AWSAccessKey = "claudiablacksaccesskey",
                 AWSSecretKey = "secret"
             };
             claudia.AddFakeBuckets();

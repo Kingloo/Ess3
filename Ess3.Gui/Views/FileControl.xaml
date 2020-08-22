@@ -15,6 +15,14 @@
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
+        <CollectionViewSource x:Key="sortedEss3Objects"
+                              Source="{Binding Path=SelectedBucket}"
+                              IsLiveSortingRequested="True">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Key" Direction="Ascending" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
         <converters:BytesToHumanReadableConverter x:Key="bytesToHumanReadableConverter" />
     </UserControl.Resources>
     
@@ -64,12 +72,24 @@
                         </StackPanel.Resources>
                         <Label Content="{Binding CreationDate}" />
                         <Label Content="{Binding Size, Converter={StaticResource bytesToHumanReadableConverter}}" />
-                        <Label Content="{Binding Directories.Count}" ContentStringFormat="{}{0} directories" />
-                        <Label Content="{Binding Files.Count}" ContentStringFormat="{}{0} files" />
+                        <!--<Label Content="{Binding Directories.Count}" ContentStringFormat="{}{0} directories" />
+                        <Label Content="{Binding Files.Count}" ContentStringFormat="{}{0} files" />-->
                     </StackPanel>
-                    
-                    <!--<TreeView Grid.Row="1"
-                              ItemsSource="{Binding }"-->
+
+                    <TreeView Grid.Row="1"
+                              ItemsSource="{Binding Ess3Objects}">
+                        <TreeView.Resources>
+                            <HierarchicalDataTemplate DataType="{x:Type ess3Model:Ess3Directory}"
+                                                      ItemsSource="{Binding Ess3Objects}">
+                                <Label Content="{Binding Key}" ContentStringFormat="{}dir: {0}" />
+                            </HierarchicalDataTemplate>
+                            
+                            <HierarchicalDataTemplate DataType="{x:Type ess3Model:Ess3File}">
+                                <Label Content="{Binding Key}" ContentStringFormat="{}file: {0}" />
+                            </HierarchicalDataTemplate>
+                        </TreeView.Resources>
+                    </TreeView>
+
                 </Grid>
             </DataTemplate>
         </TabControl.ContentTemplate>

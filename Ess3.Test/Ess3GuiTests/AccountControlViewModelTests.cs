@@ -5,7 +5,7 @@ using Ess3.Library;
 using Ess3.Library.Interfaces;
 using NUnit.Framework;
 
-namespace Ess3.Test.Ess3.Gui
+namespace Ess3.Test.Ess3GuiTests
 {
     [TestFixture]
     public class AccountControlViewModelTests

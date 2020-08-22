@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using Ess3.Gui.Common;
 using Ess3.Gui.Interfaces;
-using Ess3.Library;
 using Ess3.Library.Interfaces;
 
 namespace Ess3.Gui.ViewModels
