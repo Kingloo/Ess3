@@ -9,7 +9,7 @@ namespace Ess3.Test.Ess3LibraryTests
     public class Ess3BucketTests
     {
         [Test]
-        public void Sum()
+        public void BucketSize_Calculation()
         {
             Random random = new Random(Environment.TickCount % 17);
 
