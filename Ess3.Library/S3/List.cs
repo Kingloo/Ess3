@@ -47,6 +47,7 @@ namespace Ess3.Library.S3
             ListObjectsV2Request request = new ListObjectsV2Request
             {
                 BucketName = bucket.BucketName,
+                FetchOwner = true
             };
 
             using (IAmazonS3 client = new AmazonS3Client(account.GetCredentials(), bucket.RegionEndpoint))

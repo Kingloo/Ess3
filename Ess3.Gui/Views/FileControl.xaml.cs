@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Diagnostics;
+using System.Windows.Controls;
 using Ess3.Gui.Interfaces;
 using Ess3.Gui.ViewModels;
 using Ess3.Library.Model;
@@ -26,7 +27,10 @@ namespace Ess3.Gui.Views
         {
             if (e.AddedItems.Count == 1)
             {
-                viewModel.SelectedBucket = e.AddedItems[0] as Ess3Bucket;
+                if (e.AddedItems[0] is Ess3Bucket newSelectedBucket)
+                {
+                    viewModel.SelectedBucket = newSelectedBucket;
+                }
             }
         }
     }

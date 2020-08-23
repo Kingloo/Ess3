@@ -59,7 +59,7 @@ namespace Ess3.Library.S3
 
         public static async Task UpdateBucketAsync(IAccount account, Ess3Bucket bucket, CancellationToken token)
         {
-            ListObjectsV2Response? response = await List.ObjectsAsync(account, bucket, token).ConfigureAwait(false);
+            ListObjectsV2Response? response = await List.ObjectsAsync(account, bucket, token).ConfigureAwait(true); // ConfigAwait must remain true
 
             if (response is null) { return; }
             if (response.HttpStatusCode != HttpStatusCode.OK) { return; }

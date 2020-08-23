@@ -29,11 +29,11 @@ namespace Ess3.Gui.Converters
                     _ when bytes < oneKiB => string.Format(cc, "{0} bytes", bytes),
                     _ when bytes < oneMiB => string.Format(cc, "{0:0.##} KiB", bytes / oneKiB),
                     _ when bytes < oneGiB => string.Format(cc, "{0:0.##} MiB", bytes / oneMiB),
-                    _ when bytes < oneTiB => string.Format(cc, "{0:0.###} GiB", bytes / oneGiB),
-                    _ when bytes < onePiB => string.Format(cc, "{0:0.###} TiB", bytes / oneTiB),
-                    _ when bytes < oneEiB => string.Format(cc, "{0:0.###} PiB", bytes / onePiB),
-                    _ when bytes < oneZiB => string.Format(cc, "{0:0.###} EiB", bytes / oneEiB),
-                    _ when bytes < oneYiB => string.Format(cc, "{0:0.###} ZiB", bytes / oneZiB),
+                    _ when bytes < oneTiB => string.Format(cc, "{0:0.##} GiB", bytes / oneGiB),
+                    _ when bytes < onePiB => string.Format(cc, "{0:0.##} TiB", bytes / oneTiB),
+                    _ when bytes < oneEiB => string.Format(cc, "{0:0.##} PiB", bytes / onePiB),
+                    _ when bytes < oneZiB => string.Format(cc, "{0:0.##} EiB", bytes / oneEiB),
+                    _ when bytes < oneYiB => string.Format(cc, "{0:0.##} ZiB", bytes / oneZiB),
                     _ => string.Format(cc, "{0} YiB", bytes / oneYiB)
                 };
             }

@@ -79,7 +79,8 @@ namespace Ess3.Gui.ViewModels
         {
             if (!account.IsValidated)
             {
-                Debug.WriteLine($"account has not been validated (displayName: {account.DisplayName}, accessKey: {account.AWSAccessKey})");
+                await LogStatic.MessageAsync($"account has not been validated (displayName: {account.DisplayName}, accessKey: {account.AWSAccessKey})");
+
                 return;
             }
 
@@ -91,7 +92,7 @@ namespace Ess3.Gui.ViewModels
             {
                 account.AddBucket(each);
 
-                await Helpers.UpdateBucketAsync(account, each);
+                //await Helpers.UpdateBucketAsync(account, each);
             }
         }
 

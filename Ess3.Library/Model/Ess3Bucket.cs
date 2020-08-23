@@ -43,6 +43,8 @@ namespace Ess3.Library.Model
             if (!_ess3Objects.Contains(ess3Object))
             {
                 _ess3Objects.Add(ess3Object);
+
+                RaisePropertyChanged(nameof(Size));
             }
         }
 
