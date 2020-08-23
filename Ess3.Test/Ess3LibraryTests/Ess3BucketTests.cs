@@ -42,7 +42,7 @@ namespace Ess3.Test.Ess3LibraryTests
             Int64 expected = fileSize1 + fileSize2 + fileSize3 + fileSize4;
             Int64 actual = bucket.Size;
 
-            Assert.AreEqual(expected, actual, "bucket has {0} objects", bucket.Ess3Objects.Count);
+            Assert.AreEqual(expected, actual, "bucket has {0} objects ({1}, {2}, {3}, {4})", bucket.Ess3Objects.Count, fileSize1, fileSize2, fileSize3, fileSize4);
         }
     }
 }
