@@ -36,6 +36,8 @@ namespace Ess3.Library.Model
 
             BucketName = bucketName;
             CreationDate = creationDate;
+
+            _ess3Objects.CollectionChanged += (s, e) => RaisePropertyChanged(nameof(Size));
         }
 
         public void Add(Ess3Object ess3Object)
@@ -43,11 +45,12 @@ namespace Ess3.Library.Model
             if (!_ess3Objects.Contains(ess3Object))
             {
                 _ess3Objects.Add(ess3Object);
-
-                RaisePropertyChanged(nameof(Size));
             }
         }
 
-        public void Clear() => _ess3Objects.Clear();
+        public void Clear()
+        {
+            _ess3Objects.Clear();
+        }
     }
 }
