@@ -1,7 +1,5 @@
-﻿using System;
-using Ess3.Gui.Interfaces;
+﻿using Ess3.Gui.Interfaces;
 using Ess3.Gui.ViewModels;
-using Ess3.Library;
 using NUnit.Framework;
 
 namespace Ess3.Test.Ess3GuiTests
@@ -14,7 +12,7 @@ namespace Ess3.Test.Ess3GuiTests
         {
             IOperationsControlViewModel vm = new OperationsControlViewModel();
 
-            Assert.Zero(vm.Operations.Count);
+            Assert.Zero(vm.Operations.Count, "expected: {0}, actual: {1}", 0, vm.Operations.Count);
         }
 
         //[Test]
