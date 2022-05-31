@@ -34,6 +34,7 @@
                            Height="25"
                            Width="25"
                            ClipToBounds="True" />
+                    
                     <Label>
                         <Label.Content>
                             <TextBlock Text="{Binding BucketName}" />
@@ -85,11 +86,27 @@
                         <TreeView.Resources>
                             <HierarchicalDataTemplate DataType="{x:Type ess3Model:Ess3Directory}"
                                                       ItemsSource="{Binding Ess3Objects}">
-                                <Label Content="{Binding Key}" />
+                                <Label>
+                                    <Label.Content>
+                                        <TextBlock Text="{Binding Key}" />
+                                    </Label.Content>
+                                </Label>
                             </HierarchicalDataTemplate>
                             
                             <HierarchicalDataTemplate DataType="{x:Type ess3Model:Ess3File}">
-                                <Label Content="{Binding Key}" />
+                                <Label>
+                                    <Label.Content>
+                                        <TextBlock Text="{Binding Key}" />
+                                    </Label.Content>
+
+                                    <Label.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Download"
+                                                      Command="{Binding Path=PlacementTarget.Tag.DownloadCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                                      CommandParameter="{Binding}" />
+                                        </ContextMenu>
+                                    </Label.ContextMenu>
+                                </Label>
                             </HierarchicalDataTemplate>
                         </TreeView.Resources>
                     </TreeView>
