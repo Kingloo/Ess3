@@ -60,10 +60,13 @@ namespace Ess3.Library.Model
             return sb.ToString();
         }
 
-        public bool Equals(Ess3Object other)
-            => EqualsInternal(this, other);
+        public bool Equals(Ess3Object? other)
+        {
+            return (other is not null) && EqualsInternal(this, other);
+        }
+            
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
             => (obj is Ess3Object ess3Object) && EqualsInternal(this, ess3Object);
 
         public static bool operator ==(Ess3Object lhs, Ess3Object rhs)
@@ -78,7 +81,7 @@ namespace Ess3.Library.Model
         public override int GetHashCode()
             => original?.GetHashCode() ?? Key.GetHashCode();
 
-        public int CompareTo(Ess3Object other)
+        public int CompareTo(Ess3Object? other)
         {
             return other switch
             {

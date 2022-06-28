@@ -90,8 +90,15 @@ namespace Ess3.Library
             _buckets.Add(new Ess3Bucket(DisplayName + "'s third bucket", DateTime.Now));
         }
 
-        public bool Equals(IAccount other)
-            => AWSAccessKey.Equals(other.AWSAccessKey, StringComparison.Ordinal)
-            && AWSSecretKey.Equals(other.AWSSecretKey, StringComparison.Ordinal);        
+        public bool Equals(IAccount? other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+            
+            return AWSAccessKey.Equals(other.AWSAccessKey, StringComparison.Ordinal)
+                && AWSSecretKey.Equals(other.AWSSecretKey, StringComparison.Ordinal);
+        }
     }
 }
