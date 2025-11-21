@@ -12,7 +12,7 @@ namespace Ess3.Model
     public class Ess3Bucket : S3Bucket
     {
         #region Properties
-        public Int64 TotalSize { get; set; } = 0L;
+        public Int64? TotalSize { get; set; } = 0L;
 
         private readonly ObservableCollection<Ess3Object> _ess3Objects = new ObservableCollection<Ess3Object>();
         public IReadOnlyCollection<Ess3Object> Ess3Objects => _ess3Objects;

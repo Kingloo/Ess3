@@ -55,4 +55,4 @@ using System.Windows;
 [assembly: AssemblyFileVersion("1.4.0.0")]
 [assembly: NeutralResourcesLanguageAttribute("en-GB")]
 
-[assembly:CLSCompliant(true)]
+//[assembly:CLSCompliant(true)]

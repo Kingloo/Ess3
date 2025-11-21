@@ -214,7 +214,7 @@
                             <Label Content="owner" Style="{StaticResource dataName}" />
                             <Label Style="{StaticResource dataLabel}">
                                 <Label.Content>
-                                    <TextBlock Text="{Binding Path=Owner.DisplayName, Mode=OneTime}" />
+                                    <TextBlock Text="{Binding Path=Owner.Id, Mode=OneTime}" />
                                 </Label.Content>
                             </Label>
 

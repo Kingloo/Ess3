@@ -73,7 +73,7 @@ namespace Ess3.ViewModels
 
         private async Task ShowACLDisplayWindowAsync(Ess3Object obj)
         {
-            S3AccessControlList acl = await S3.GetACLAsync(ess3Settings, obj, CancellationToken.None);
+            GetObjectAclResponse acl = await S3.GetAclAsync(ess3Settings, obj, CancellationToken.None);
 
             if (acl is null)
             {
@@ -85,7 +85,7 @@ namespace Ess3.ViewModels
             }
             else
             {
-                ACLDisplayWindow win = new ACLDisplayWindow(acl)
+                AclDisplayWindow win = new AclDisplayWindow(acl)
                 {
                     WindowStartupLocation = WindowStartupLocation.CenterScreen
                 };
@@ -229,7 +229,7 @@ namespace Ess3.ViewModels
 
             decimal percent = (transferred / total) * 100;
 
-            string percentText = string.Format(CultureInfo.CurrentCulture, "{0} %", percent.ToString(progressFormat));
+            string percentText = string.Format(CultureInfo.CurrentCulture, "{0} %", percent.ToString(progressFormat, CultureInfo.CurrentCulture));
             double percentDouble = Convert.ToDouble(percent);
 
             Action updateUI = () => OnActivityProgressChanged(null, percentText, percentDouble);
@@ -327,7 +327,7 @@ namespace Ess3.ViewModels
 
             S3CannedACL acl = S3CannedACL.PublicRead;
 
-            HttpStatusCode result = await S3.SetACLAsync(ess3Settings, file, acl, CancellationToken.None)
+            HttpStatusCode result = await S3.SetAclAsync(ess3Settings, file, acl, CancellationToken.None)
                 .ConfigureAwait(false);
 
             if (result != HttpStatusCode.OK)
@@ -360,7 +360,7 @@ namespace Ess3.ViewModels
 
             S3CannedACL acl = S3CannedACL.Private;
 
-            HttpStatusCode result = await S3.SetACLAsync(ess3Settings, file, acl, CancellationToken.None)
+            HttpStatusCode result = await S3.SetAclAsync(ess3Settings, file, acl, CancellationToken.None)
                 .ConfigureAwait(false);
 
             if (result != HttpStatusCode.OK)

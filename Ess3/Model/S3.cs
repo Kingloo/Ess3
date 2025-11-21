@@ -305,13 +305,13 @@ namespace Ess3.Model
             }
         }
 
-        public static async Task<S3AccessControlList> GetACLAsync(Ess3Settings settings, Ess3Object obj, CancellationToken token)
+        public static async Task<GetObjectAclResponse> GetAclAsync(Ess3Settings settings, Ess3Object obj, CancellationToken token)
         {
             if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
             if (obj is null) { throw new ArgumentNullException(nameof(obj)); }
             if (token == null) { token = CancellationToken.None; }
 
-            GetACLRequest req = new GetACLRequest
+            GetObjectAclRequest request = new GetObjectAclRequest
             {
                 BucketName = obj.Bucket.BucketName,
                 Key = obj.Key
@@ -321,9 +321,7 @@ namespace Ess3.Model
             {
                 try
                 {
-                    GetACLResponse resp = await client.GetACLAsync(req, token).ConfigureAwait(false);
-
-                    return resp.AccessControlList;
+                    return await client.GetObjectAclAsync(request, token).ConfigureAwait(false);
                 }
                 catch (AmazonS3Exception ex)
                 {
@@ -334,27 +332,27 @@ namespace Ess3.Model
             return null;
         }
 
-        public static async Task<HttpStatusCode> SetACLAsync(Ess3Settings settings, Ess3Object obj, S3CannedACL cannedACL, CancellationToken token)
+        public static async Task<HttpStatusCode> SetAclAsync(Ess3Settings settings, Ess3Object obj, S3CannedACL cannedACL, CancellationToken token)
         {
             if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
             if (obj is null) { throw new ArgumentNullException(nameof(obj)); }
             if (cannedACL is null) { throw new ArgumentNullException(nameof(cannedACL)); }
             if (token == null) { token = CancellationToken.None; }
 
-            PutACLRequest req = new PutACLRequest
+            PutObjectAclRequest request = new PutObjectAclRequest
             {
+                ACL = cannedACL,
                 BucketName = obj.Bucket.BucketName,
-                Key = obj.Key,
-                CannedACL = cannedACL
+                Key = obj.Key
             };
 
             using (IAmazonS3 client = settings.Client)
             {
                 try
                 {
-                    PutACLResponse resp = await client.PutACLAsync(req, token).ConfigureAwait(false);
+                    PutObjectAclResponse response = await client.PutObjectAclAsync(request, token).ConfigureAwait(false);
 
-                    return resp.HttpStatusCode;
+                    return response.HttpStatusCode;
                 }
                 catch (AmazonS3Exception ex)
                 {
@@ -369,6 +367,7 @@ namespace Ess3.Model
         {
             if (settings is null) { throw new ArgumentNullException(nameof(settings)); }
             if (file is null) { throw new ArgumentNullException(nameof(file)); }
+            if (file.Size is null) { throw new ArgumentOutOfRangeException(nameof(file.Size), "file size was null"); }
             if (storageClass is null) { throw new ArgumentNullException(nameof(storageClass)); }
             if (token == null) { token = CancellationToken.None; }
 
@@ -387,7 +386,7 @@ namespace Ess3.Model
                     StorageClass = storageClass
                 };
 
-                return await CopyObjectInPartsAsync(settings, initiateRequest, file.Size, token).ConfigureAwait(false);
+                return await CopyObjectInPartsAsync(settings, initiateRequest, file.Size.Value, token).ConfigureAwait(false);
             }
         }
 

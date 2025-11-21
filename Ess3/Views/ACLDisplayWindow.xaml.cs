@@ -4,9 +4,9 @@ using Amazon.S3.Model;
 
 namespace Ess3.Views
 {
-    public partial class ACLDisplayWindow : Window
+    public partial class AclDisplayWindow : Window
     {
-        public ACLDisplayWindow(S3AccessControlList acls)
+        public AclDisplayWindow(GetObjectAclResponse acls)
         {
             InitializeComponent();
 

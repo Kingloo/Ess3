@@ -16,11 +16,11 @@ namespace Ess3.Model
         public bool IsDirectory { get; } = false;
         public bool IsAtBucketRoot => String.IsNullOrEmpty(Prefix);
         public string Etag { get; } = string.Empty;
-        public DateTime LastModified { get; } = DateTime.MinValue;
+        public DateTime? LastModified { get; } = DateTime.MinValue;
         public Owner Owner { get; } = null;
-        public Int64 Size { get; protected set; } = 0L;
+        public Int64? Size { get; protected set; } = 0L;
         public S3StorageClass StorageClass { get; } = S3StorageClass.Standard;
-        public S3AccessControlList ACL { get; } = null;
+        public S3AccessControlList Acl { get; } = null;
         #endregion
 
         protected Ess3Object(S3Object s3Object, Ess3Bucket ess3Bucket, bool isDirectory)
