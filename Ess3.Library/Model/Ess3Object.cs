@@ -14,9 +14,9 @@ namespace Ess3.Library.Model
         public string BucketName { get; set; } = string.Empty;
         public string Key { get; set; } = string.Empty;
         public string Prefix => GetPrefix(Key);
-        public DateTime LastModified { get; set; } = DateTime.MinValue;
+        public DateTime? LastModified { get; set; } = DateTime.MinValue;
         public Owner Owner { get; set; } = new Owner { DisplayName = "uninitialized display name", Id = "uninitialized id" };
-        public abstract Int64 Size { get; }
+        public abstract Int64? Size { get; }
         public S3StorageClass StorageClass { get; set; } = S3StorageClass.Standard;
 
         protected Ess3Object() { }

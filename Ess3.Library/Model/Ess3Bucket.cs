@@ -11,10 +11,10 @@ namespace Ess3.Library.Model
     public class Ess3Bucket : BindableBase
     {
         public string BucketName { get; } = string.Empty;
-        public DateTime CreationDate { get; } = DateTime.MinValue;
+        public DateTime? CreationDate { get; } = DateTime.MinValue;
         public RegionEndpoint RegionEndpoint { get; set; } = RegionEndpoint.EUWest1;
 
-        public Int64 Size => _ess3Objects.Sum(o => o.Size);
+        public Int64? Size {get => _ess3Objects.Sum(static o => o.Size); }
 
         private readonly ObservableCollection<Ess3Object> _ess3Objects = new ObservableCollection<Ess3Object>();
         public IReadOnlyCollection<Ess3Object> Ess3Objects => _ess3Objects;
@@ -27,7 +27,7 @@ namespace Ess3.Library.Model
             : this(bucketName, DateTime.Now)
         { }
 
-        public Ess3Bucket(string bucketName, DateTime creationDate)
+        public Ess3Bucket(string bucketName, DateTime? creationDate)
         {
             if (String.IsNullOrEmpty(bucketName))
             {
