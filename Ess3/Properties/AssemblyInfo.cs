@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Kingloo Holdings Ltd.")]
 [assembly: AssemblyProduct("Ess3")]
-[assembly: AssemblyCopyright("Copyright © Kingloo 2022")]
+[assembly: AssemblyCopyright("Copyright © Kingloo 2025")]
 [assembly: AssemblyTrademark("Kingloo")]
 [assembly: AssemblyCulture("")]
 

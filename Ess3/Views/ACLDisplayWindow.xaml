@@ -47,7 +47,6 @@
                     
                     <Grid.RowDefinitions>
                         <RowDefinition Height="40" />
-                        <RowDefinition Height="40" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="390" />
@@ -55,14 +54,9 @@
                     </Grid.ColumnDefinitions>
 
                     <Label Grid.Row="0" Grid.Column="0"
-                           VerticalAlignment="Bottom"
-                           Content="{Binding Path=Grantee.DisplayName, Mode=OneTime}" />
+                           Content="{Binding Path=Grantee.CanonicalUser, Mode=OneTime}" />
 
-                    <Label Grid.Row="1" Grid.Column="0"
-                           VerticalAlignment="Top"
-                           Content="{Binding Path=Grantee.URI, Mode=OneTime}" />
-
-                    <Label Grid.RowSpan="2" Grid.Column="1"
+                    <Label Grid.Row="0" Grid.Column="1"
                            Content="{Binding Path=Permission, Mode=OneTime}" />
 
                 </Grid>
